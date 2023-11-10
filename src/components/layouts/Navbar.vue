@@ -1,0 +1,37 @@
+<template>
+  <div>
+    <Sidebar :drawer="drawer"></Sidebar>
+    <v-app-bar app color="green">
+      <v-app-bar-nav-icon
+        @click.stop="drawer = !drawer"
+        color="white"
+      ></v-app-bar-nav-icon>
+      <v-toolbar-title class="white--text">{{ $route.name }}</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn text class="white--text" to="/">Home</v-btn>
+      <v-btn text class="white--text" to="/about">Sobre</v-btn>
+    </v-app-bar>
+  </div>
+</template>
+
+
+<script>
+import Sidebar from "./Sidebar"
+export default {
+  name: "PacienteVacinasNavbar",
+components: {
+    Sidebar
+},
+  data() {
+    return {
+      drawer: true,
+    };
+  },
+  mounted() {},
+
+  methods: {},
+};
+</script>
+
+<style lang="scss" scoped>
+</style>
