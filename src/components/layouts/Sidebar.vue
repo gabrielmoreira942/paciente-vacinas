@@ -25,14 +25,6 @@
           </v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item link class="mt-2">
-        <v-list-item-content>
-          <v-list-item-title
-            >Mocks
-            <v-icon color="black">mdi-database</v-icon>
-          </v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>

@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <CrudPatient></CrudPatient>
+    <CrudVaccine></CrudVaccine>
     <v-row>
       <v-col>
         <v-data-table
@@ -16,41 +16,41 @@
   
   <script>
 import { dataBr } from "@/utils/FormatDate";
-import CrudPatient from "@/components/modules/patient/CrudPatient.vue";
-import { getPatient } from "@/services/PatientServices";
+import CrudVaccine from "@/components/modules/vaccine/CrudVaccine.vue";
+import { getVaccine } from "@/services/VaccineServices";
 export default {
   name: "HelloWorld",
   components: {
-    CrudPatient,
+    CrudVaccine,
   },
   data() {
     return {
       headers: [
         {
-          text: "Paciente",
+          text: "Fabricante",
           align: "start",
-          value: "firstName",
+          value: "manufacturer",
         },
         {
-          text: "Sobrenome",
-          value: "lastName",
+          text: "Lote",
+          value: "batch",
         },
-        { text: "CPF", value: "cpf" },
-        { text: "Gênero", value: "gender" },
-        { text: "Data de nascimento", value: "birthDate" },
+        { text: "Validade", value: "validateDate" },
+        { text: "Quantidade de doses", value: "amountOfDose" },
+        { text: "Intervalo entre doses", value: "intervalBetweenDoses" },
         { text: "Identificador", value: "id" },
       ],
       items: [],
     };
   },
   async created() {
-    this.items = this.dateBr(await getPatient());
+    this.items = this.dateBr(await getVaccine());
   },
   methods: {
     dateBr(data) {
       let result = data;
       data.map((item, i) => {
-        result[i].birthDate = dataBr(item.birthDate);
+        result[i].validateDate = dataBr(item.validateDate);
       });
       return result;
     },

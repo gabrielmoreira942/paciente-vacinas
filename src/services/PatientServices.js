@@ -17,3 +17,11 @@ export async function createPatient(data) {
         throw error;
     }
 }
+export async function mockPatient() {
+    try {
+        await vue.$api.patient.post('patient/mock-patients');
+        return 'Mock de pacientes efetuado com sucesso!'
+    } catch (error) {
+        throw error;
+    }
+}

@@ -46,7 +46,7 @@
                   label="Data de Nascimento"
                   outlined
                   type="date"
-                  :max="'2023-12-31'"
+                  :max="currentDate"
                 ></v-text-field>
               </div>
               <div v-if="step == 1">
@@ -216,6 +216,15 @@ export default {
           break;
       }
     },
+  },
+  currentDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    let month = today.getMonth() + 1;
+    let day = today.getDate();
+    month = month < 10 ? `0${month}` : month;
+    day = day < 10 ? `0${day}` : day;
+    return `${year}-${month}-${day}`;
   },
 };
 </script>

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import Patient from '../components/modules/patient/IndexPatient.vue'
+import Vaccine from '../components/modules/vaccine/IndexVaccine.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -14,6 +15,11 @@ const routes = [
     path: '/patients',
     name: 'Consultar Pacientes',
     component: Patient
+  },
+  {
+    path: '/vaccines',
+    name: 'Consultar Vacinas',
+    component: Vaccine
   },
   {
     path: '/about',
