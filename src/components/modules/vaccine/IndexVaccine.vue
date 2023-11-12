@@ -8,6 +8,7 @@
           :items="items"
           :items-per-page="10"
           class="elevation-1"
+          :loading="loadingGrid"
         ></v-data-table>
       </v-col>
     </v-row>
@@ -25,6 +26,7 @@ export default {
   },
   data() {
     return {
+      loadingGrid: false,
       headers: [
         {
           text: "Fabricante",
@@ -43,16 +45,31 @@ export default {
       items: [],
     };
   },
+  beforeDestroy() {
+    this.$eventBus.$off("refresh-vaccine");
+  },
   async created() {
-    this.items = this.dateBr(await getVaccine());
+    this.refreshVaccine();
+    this.requestVaccine();
   },
   methods: {
+    async requestVaccine() {
+      this.items = this.dateBr(await getVaccine());
+    },
     dateBr(data) {
       let result = data;
       data.map((item, i) => {
         result[i].validateDate = dataBr(item.validateDate);
       });
       return result;
+    },
+    refreshVaccine() {
+      this.$eventBus.$on("refresh-vaccine", async () => {
+        this.items = [];
+        this.loadingGrid = true;
+        this.requestVaccine();
+        this.loadingGrid = false;
+      });
     },
   },
 };

@@ -1,5 +1,6 @@
 import Vue from 'vue';
 const vue = new Vue();
+import Swal from 'sweetalert2';
 
 export async function getVaccine() {
     try {
@@ -12,6 +13,13 @@ export async function getVaccine() {
 export async function createVaccine(data) {
     try {
         const result = await vue.$api.vaccine.post('vaccine', data);
+        Swal.fire({
+            icon: "success",
+            title: "Vacina Cadastrada!",
+            html: `<p><span>Vacina cadastrada com sucesso!</span></p>`,
+            showConfirmButton: false,
+            timer: 2000,
+        });
         return result;
     } catch (error) {
         throw error;

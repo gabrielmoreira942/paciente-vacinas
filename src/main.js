@@ -5,6 +5,8 @@ import store from './store';
 import Vuetify from 'vuetify';
 import pt from 'vuetify/lib/locale/pt';
 import { vaccineApi, patientApi, managerApi } from './config/api';
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 import axios from 'axios';
 
 const vuetify = new Vuetify({
@@ -14,6 +16,7 @@ const vuetify = new Vuetify({
   },
 });
 
+Vue.use(VueSweetalert2);
 Vue.use(Vuetify)
 Vue.prototype.$axios = axios;
 Vue.prototype.$api = {
@@ -21,6 +24,7 @@ Vue.prototype.$api = {
   patient: patientApi,
   manager: managerApi,
 };
+Vue.prototype.$eventBus = new Vue();
 
 Vue.config.productionTip = false;
 
