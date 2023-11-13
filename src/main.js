@@ -8,7 +8,9 @@ import { vaccineApi, patientApi, managerApi } from './config/api';
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import axios from 'axios';
+import VueMask from 'v-mask';
 
+Vue.use(VueMask);
 const vuetify = new Vuetify({
   lang: {
     locales: { pt },

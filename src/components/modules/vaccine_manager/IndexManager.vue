@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <CrudPatient></CrudPatient>
+    <CrudVaccine></CrudVaccine>
     <v-row>
       <v-col>
         <v-data-table
@@ -8,6 +8,7 @@
           :items="items"
           :items-per-page="10"
           class="elevation-1"
+          :loading="loadingGrid"
         ></v-data-table>
       </v-col>
     </v-row>
@@ -16,56 +17,57 @@
   
   <script>
 import { dataBr } from "@/utils/FormatDate";
-import CrudPatient from "@/components/modules/patient/CrudPatient.vue";
-import { getPatient } from "@/services/PatientServices";
+import CrudVaccine from "@/components/modules/vaccine/CrudVaccine.vue";
+import { getVaccine } from "@/services/VaccineServices";
 export default {
   name: "HelloWorld",
   components: {
-    CrudPatient,
+    CrudVaccine,
   },
   data() {
     return {
+      loadingGrid: false,
       headers: [
         {
-          text: "Paciente",
+          text: "Fabricante",
           align: "start",
-          value: "firstName",
+          value: "manufacturer",
         },
         {
-          text: "Sobrenome",
-          value: "lastName",
+          text: "Lote",
+          value: "batch",
         },
-        { text: "CPF", value: "cpf" },
-        { text: "Gênero", value: "gender" },
-        { text: "Data de nascimento", value: "birthDate" },
+        { text: "Validade", value: "validateDate" },
+        { text: "Quantidade de doses", value: "amountOfDose" },
+        { text: "Intervalo entre doses", value: "intervalBetweenDoses" },
         { text: "Identificador", value: "id" },
       ],
       items: [],
     };
   },
   beforeDestroy() {
-    this.$eventBus.$off("refresh-patient");
+    this.$eventBus.$off("refresh-vaccine");
   },
   async created() {
-    this.requestPatient();
-    this.refreshPatient();
+    this.refreshVaccine();
+    this.requestVaccine();
   },
   methods: {
-    async requestPatient() {
-      this.items = this.dateBr(await getPatient());
+    async requestVaccine() {
+      this.items = this.dateBr(await getVaccine());
     },
     dateBr(data) {
       let result = data;
       data.map((item, i) => {
-        result[i].birthDate = dataBr(item.birthDate);
+        result[i].validateDate = dataBr(item.validateDate);
       });
       return result;
     },
-    refreshPatient() {
-      this.$eventBus.$on("refresh-patient", async () => {
+    refreshVaccine() {
+      this.$eventBus.$on("refresh-vaccine", async () => {
         this.items = [];
         this.loadingGrid = true;
-        this.requestPatient();
+        this.requestVaccine();
         this.loadingGrid = false;
       });
     },

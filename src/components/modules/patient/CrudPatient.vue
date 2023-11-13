@@ -49,7 +49,7 @@
                   :max="currentDate"
                 ></v-text-field>
               </div>
-              <div v-if="step == 1">
+              <div v-else-if="step == 1">
                 <!-- ANCHOR - CONTATOS -->
                 <v-text-field
                   v-model="patient.contact.telephone"
@@ -69,12 +69,11 @@
                 ></v-text-field>
               </div>
               <!-- ANCHOR - ENDEREÇO -->
-              <div v-if="step == 2">
+              <div v-else-if="step == 2">
                 <v-text-field
                   class="mt-3"
                   label="Número"
                   outlined
-                  v-model="patient.address.number"
                 ></v-text-field>
                 <v-text-field
                   v-model="patient.address.neighborhood"
@@ -93,12 +92,12 @@
                 ></v-text-field>
                 <v-text-field
                   v-model="patient.address.state"
-                  label="ESTADO"
+                  label="Estado"
                   outlined
                 ></v-text-field>
                 <v-text-field
                   v-model="patient.address.street"
-                  label="RUA"
+                  label="Rua"
                   outlined
                 ></v-text-field>
               </div>
@@ -115,11 +114,13 @@
                 v-if="btnNext == 'Salvar'"
                 color="primary"
                 @click="crud()"
+                :loading="loadingBtn"
                 >{{ btnNext }}</v-btn
               >
               <v-btn
                 v-if="btnNext == 'Editar'"
                 color="primary"
+                :loading="loadingBtn"
                 @click="crud()"
                 >{{ btnNext }}</v-btn
               >
@@ -140,10 +141,12 @@ export default {
   data() {
     return {
       dialog: false,
+      loadingBtn: false,
       step: 0,
       btnNext: "Próximo",
       btnAction: "",
       btnBack: "Fechar",
+      teste: "",
       patient: {
         firstName: "",
         lastName: "",
@@ -170,7 +173,7 @@ export default {
     async crud() {
       switch (this.btnAction) {
         case "Cadastrar":
-          await createPatient(this.patient);
+          this.createRequest(this.patient);
           break;
         case "Editar":
           await createPatient(this.patient);
@@ -180,7 +183,13 @@ export default {
           break;
       }
     },
-
+    async createRequest() {
+      this.setLoading();
+      await createPatient(this.patient);
+      this.setLoading();
+      this.refresh();
+    },
+    // SECTION - STEPS
     stepNext() {
       if (this.step < 2) {
         this.btnBack = "Voltar";
@@ -216,15 +225,29 @@ export default {
           break;
       }
     },
-  },
-  currentDate() {
-    const today = new Date();
-    const year = today.getFullYear();
-    let month = today.getMonth() + 1;
-    let day = today.getDate();
-    month = month < 10 ? `0${month}` : month;
-    day = day < 10 ? `0${day}` : day;
-    return `${year}-${month}-${day}`;
+    // !SECTION
+
+    // SECTION - UTILS
+    currentDate() {
+      const today = new Date();
+      const year = today.getFullYear();
+      let month = today.getMonth() + 1;
+      let day = today.getDate();
+      month = month < 10 ? `0${month}` : month;
+      day = day < 10 ? `0${day}` : day;
+      return `${year}-${month}-${day}`;
+    },
+    setLoading() {
+      this.loadingBtn = !this.loadingBtn;
+    },
+    refresh() {
+      this.step = 0;
+      this.btnNext = "Próximo";
+      this.dialog = false;
+      this.$eventBus.$emit("refresh-patient", true);
+      clearObject(this.patient);
+    },
+    // !SECTION
   },
 };
 </script>

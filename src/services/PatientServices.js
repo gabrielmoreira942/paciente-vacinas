@@ -21,7 +21,17 @@ export async function createPatient(data) {
         });
         return result;
     } catch (error) {
-        throw error;
+        let errorMessage = ''
+        for (const field in error.response.data.mensagem) {
+            errorMessage += `${error.response.data.mensagem[field]}<br>`;
+        }
+        Swal.fire({
+            icon: "error",
+            title: "Ocorreu um erro!",
+            html: errorMessage,
+            showConfirmButton: true,
+            timerProgressBar: true,
+          });
     }
 }
 export async function mockPatient() {
