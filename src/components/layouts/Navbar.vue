@@ -24,7 +24,7 @@ components: {
 },
   data() {
     return {
-      drawer: true,
+      drawer: false,
     };
   },
   mounted() {},
