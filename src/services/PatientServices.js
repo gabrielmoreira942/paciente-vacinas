@@ -27,11 +27,36 @@ export async function createPatient(data) {
         }
         Swal.fire({
             icon: "error",
-            title: "Ocorreu um erro!",
+            title: "Aviso!",
             html: errorMessage,
             showConfirmButton: true,
             timerProgressBar: true,
-          });
+        });
+    }
+}
+export async function editPatient(data) {
+    try {
+        const result = await vue.$api.patient.put(`patient/${data.id}`, data);
+        Swal.fire({
+            icon: "success",
+            title: "Paciente Editado!",
+            html: `<p><span>Paciente editado com sucesso!</span></p>`,
+            showConfirmButton: false,
+            timer: 2000,
+        });
+        return result;
+    } catch (error) {
+        let errorMessage = ''
+        for (const field in error.response.data.mensagem) {
+            errorMessage += `${error.response.data.mensagem[field]}<br>`;
+        }
+        Swal.fire({
+            icon: "error",
+            title: "Aviso!",
+            html: errorMessage,
+            showConfirmButton: true,
+            timerProgressBar: true,
+        });
     }
 }
 export async function mockPatient() {

@@ -6,7 +6,8 @@ export {
   mesAnteriorBr,
   populateYearOptions,
   replace,
-} 
+  dataEUA
+}
 
 const dataAtualFormatada = (date) => {
   let data = new Date(date);
@@ -36,8 +37,15 @@ const dataBr = (date) => {
   let mes = (data.getMonth() + 1).toString(); //+1 pois no getMonth Janeiro começa com zero.
   let mesF = mes.length == 1 ? "0" + mes : mes;
   let anoF = data.getFullYear();
-  return diaF + '/' + mesF + '/' + anoF;
+  return (parseInt(diaF) + 1) + '/' + mesF + '/' + anoF;
 }
+const dataEUA = (date) => {
+  const partes = date.split('/');
+  const dia = partes[0];
+  const mes = partes[1];
+  const ano = partes[2];
+  return `${ano}-${mes}-${dia}`;
+};
 // converte data americana para Mês(nome)/Ano
 const mesAnoBr = (date) => {
   const year = date.substr(0, 4)

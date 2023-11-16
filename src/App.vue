@@ -3,7 +3,7 @@
     <Navbar></Navbar>
     <v-main>
       <v-container>
-        <router-view />
+        <BaseTransition></BaseTransition>
       </v-container>
     </v-main>
   </v-app>
@@ -11,10 +11,10 @@
 
 <script>
 import Navbar from "./components/layouts/Navbar.vue";
-
+import BaseTransition from "./components/layouts/transitions/BaseTransition.vue";
 export default {
   name: "App",
   data: () => ({}),
-  components: { Navbar },
+  components: { Navbar, BaseTransition },
 };
 </script>

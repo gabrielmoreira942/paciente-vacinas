@@ -3,10 +3,10 @@
     <v-row>
       <v-col class="d-flex justify-end">
         <!-- <v-form > -->
-        <v-dialog max-width="600" v-model="dialog" persistent>
+        <v-dialog max-width="600" v-model="getDialog" persistent>
           <template v-slot:activator="{ on, attrs }">
             <v-btn
-              @click="(btnAction = 'Cadastrar'), (dialog = true)"
+              @click="createDialog()"
               color="primary"
               v-bind="attrs"
               v-on="on"
@@ -16,38 +16,38 @@
           </template>
           <v-card>
             <v-toolbar color="primary" dark>
-              {{ btnAction }} Paciente
+              {{ getAction }} Paciente
             </v-toolbar>
             <v-card-text>
               <!-- ANCHOR - DADOS PESSOAIS -->
               <div v-if="step == 0">
                 <v-text-field
-                  v-model="patient.firstName"
+                  v-model="getPatient.firstName"
                   class="mt-3"
                   id="nome"
                   label="Nome"
                   outlined
                 ></v-text-field>
                 <v-text-field
-                  v-model="patient.lastName"
+                  v-model="getPatient.lastName"
                   label="Sobrenome"
                   id="sobrenome"
                   outlined
                 ></v-text-field>
                 <v-text-field
-                  v-model="patient.gender"
+                  v-model="getPatient.gender"
                   label="Gênero"
                   id="genero"
                   outlined
                 ></v-text-field>
                 <v-text-field
-                  v-model="patient.cpf"
+                  v-model="getPatient.cpf"
                   label="CPF"
                   id="cpf"
                   outlined
                 ></v-text-field>
                 <v-text-field
-                  v-model="patient.birthDate"
+                  v-model="getPatient.birthDate"
                   label="Data de Nascimento"
                   outlined
                   id="data_nascimento"
@@ -58,20 +58,20 @@
               <div v-else-if="step == 1">
                 <!-- ANCHOR - CONTATOS -->
                 <v-text-field
-                  v-model="patient.contact.telephone"
+                  v-model="getPatient.contact.telephone"
                   class="mt-3"
                   id="telefone"
                   label="Telefone"
                   outlined
                 ></v-text-field>
                 <v-text-field
-                  v-model="patient.contact.whatsapp"
+                  v-model="getPatient.contact.whatsapp"
                   label="Whatsapp"
                   id="whatsapp"
                   outlined
                 ></v-text-field>
                 <v-text-field
-                  v-model="patient.contact.email"
+                  v-model="getPatient.contact.email"
                   label="E-mail"
                   id="email"
                   outlined
@@ -84,33 +84,34 @@
                   id="numero"
                   label="Número"
                   outlined
+                  v-model="getPatient.address.number"
                 ></v-text-field>
                 <v-text-field
-                  v-model="patient.address.neighborhood"
+                  v-model="getPatient.address.neighborhood"
                   label="Bairro"
                   id="bairro"
                   outlined
                 ></v-text-field>
                 <v-text-field
-                  v-model="patient.address.county"
+                  v-model="getPatient.address.county"
                   label="Cidade"
                   id="cidade"
                   outlined
                 ></v-text-field>
                 <v-text-field
-                  v-model="patient.address.zipCode"
+                  v-model="getPatient.address.zipCode"
                   label="CEP"
                   id="cep"
                   outlined
                 ></v-text-field>
                 <v-text-field
-                  v-model="patient.address.state"
+                  v-model="getPatient.address.state"
                   label="Estado"
                   id="estado"
                   outlined
                 ></v-text-field>
                 <v-text-field
-                  v-model="patient.address.street"
+                  v-model="getPatient.address.street"
                   label="Rua"
                   id="rua"
                   outlined
@@ -152,18 +153,17 @@
 
 <script>
 import { clearObject } from "@/utils/ClearValues";
-import { createPatient } from "@/services/PatientServices";
+import { createPatient, editPatient } from "@/services/PatientServices";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
+  props: {},
   data() {
     return {
-      dialog: false,
       loadingBtn: false,
       step: 0,
       btnNext: "Próximo",
-      btnAction: "",
       btnBack: "Fechar",
-      teste: "",
       patient: {
         firstName: "",
         lastName: "",
@@ -186,23 +186,36 @@ export default {
       },
     };
   },
+  created() {
+    this.changePatient(this.patient);
+  },
+  computed: {
+    ...mapGetters(["getPatient", "getDialog", "getAction"]),
+  },
   methods: {
+    ...mapActions(["changePatient", "changeDialog", "changeAction"]),
     async crud() {
-      switch (this.btnAction) {
+      switch (this.getAction) {
         case "Cadastrar":
-          this.createRequest(this.patient);
+          this.createRequest(this.getPatient);
           break;
         case "Editar":
-          await createPatient(this.patient);
+          this.editRequest(this.getPatient);
           break;
         case "Excluir":
-          await createPatient(this.patient);
+          await createPatient(this.getPatient);
           break;
       }
     },
     async createRequest() {
       this.setLoading();
-      await createPatient(this.patient);
+      await createPatient(this.getPatient);
+      this.setLoading();
+      this.refresh();
+    },
+    async editRequest() {
+      this.setLoading();
+      await editPatient(this.getPatient);
       this.setLoading();
       this.refresh();
     },
@@ -213,7 +226,7 @@ export default {
         this.step++;
       }
       if (this.step == 2) {
-        switch (this.btnAction) {
+        switch (this.getAction) {
           case "Cadastrar":
             this.btnNext = "Salvar";
             break;
@@ -228,7 +241,7 @@ export default {
     },
     stepBack() {
       if (this.step == 0) {
-        return (this.dialog = false);
+        return this.changeDialog(false);
       }
       this.step -= 1;
       switch (this.step) {
@@ -241,6 +254,10 @@ export default {
           this.btnNext = "Próximo";
           break;
       }
+    },
+    createDialog() {
+      this.changeAction("Cadastrar");
+      this.changeDialog(true);
     },
     // !SECTION
 
@@ -260,9 +277,9 @@ export default {
     refresh() {
       this.step = 0;
       this.btnNext = "Próximo";
-      this.dialog = false;
+      this.changeDialog(false);
       this.$eventBus.$emit("refresh-patient", true);
-      clearObject(this.patient);
+      clearObject(this.getPatient);
     },
     // !SECTION
   },
