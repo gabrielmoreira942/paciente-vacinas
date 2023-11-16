@@ -111,6 +111,8 @@ export default {
       items.birthDate = dataEUA(item.birthDate);
       this.changeAction("Editar");
       this.changePatient(items);
+      this.changeDialog(true);
+
     },
     deleteItem(item) {
       this.changeAction("Excluir");
