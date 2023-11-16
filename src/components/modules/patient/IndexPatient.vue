@@ -105,7 +105,6 @@ export default {
         name: "Visualizar Pacientes",
         params: { name: "view" },
       });
-      console.log(a);
     },
     edit(item) {
       let items = { ...item };
