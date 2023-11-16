@@ -21,17 +21,7 @@ export async function createPatient(data) {
         });
         return result;
     } catch (error) {
-        let errorMessage = ''
-        for (const field in error.response.data.mensagem) {
-            errorMessage += `${error.response.data.mensagem[field]}<br>`;
-        }
-        Swal.fire({
-            icon: "error",
-            title: "Aviso!",
-            html: errorMessage,
-            showConfirmButton: true,
-            timerProgressBar: true,
-        });
+        getErrors(error)
     }
 }
 export async function editPatient(data) {
@@ -46,19 +36,42 @@ export async function editPatient(data) {
         });
         return result;
     } catch (error) {
-        let errorMessage = ''
-        for (const field in error.response.data.mensagem) {
-            errorMessage += `${error.response.data.mensagem[field]}<br>`;
-        }
-        Swal.fire({
-            icon: "error",
-            title: "Aviso!",
-            html: errorMessage,
-            showConfirmButton: true,
-            timerProgressBar: true,
-        });
+        getErrors(error)
     }
 }
+
+export async function deletePatient(data) {
+    try {
+        const result = await vue.$api.patient.delete(`patient/${data.id}`, data);
+        Swal.fire({
+            icon: "success",
+            title: "Paciente Excluído!",
+            html: `<p><span>Paciente excluído com sucesso!</span></p>`,
+            showConfirmButton: false,
+            timer: 2000,
+        });
+        return result;
+    } catch (error) {
+        getErrors(error)
+    }
+}
+export async function findByIdPatient(id) {
+    try {
+        const result = await vue.$api.patient.get(`patient/${id}`);
+        // Swal.fire({
+        //     icon: "success",
+        //     title: "Paciente Excluído!",
+        //     html: `<p><span>Paciente excluído com sucesso!</span></p>`,
+        //     showConfirmButton: false,
+        //     timer: 2000,
+        // });
+        return result;
+    } catch (error) {
+        getErrors(error)
+    }
+}
+
+
 export async function mockPatient() {
     try {
         await vue.$api.patient.post('patient/mock-patients');
@@ -66,4 +79,18 @@ export async function mockPatient() {
     } catch (error) {
         throw error;
     }
+}
+
+function getErrors(error) {
+    let errorMessage = ''
+    for (const field in error.response.data.mensagem) {
+        errorMessage += `${error.response.data.mensagem[field]}<br>`;
+    }
+    Swal.fire({
+        icon: "error",
+        title: "Aviso!",
+        html: errorMessage,
+        showConfirmButton: true,
+        timerProgressBar: true,
+    });
 }

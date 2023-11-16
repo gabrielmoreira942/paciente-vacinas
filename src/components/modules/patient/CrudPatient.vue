@@ -145,6 +145,19 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+        <v-dialog v-model="getDialogDelete" max-width="500px">
+          <v-card>
+            <v-card-title>Confirmação de Exclusão</v-card-title>
+            <v-card-text>
+              Tem certeza de que deseja excluir este item?
+            </v-card-text>
+            <v-card-actions class="justify-end">
+              <v-btn @click="changeDialogDelete(false)">Cancelar</v-btn>
+              <v-btn color="error" @click="crud()">Confirmar</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
         <!-- </v-form> -->
       </v-col>
     </v-row>
@@ -153,7 +166,11 @@
 
 <script>
 import { clearObject } from "@/utils/ClearValues";
-import { createPatient, editPatient } from "@/services/PatientServices";
+import {
+  createPatient,
+  editPatient,
+  deletePatient,
+} from "@/services/PatientServices";
 import { mapActions, mapGetters } from "vuex";
 
 export default {
@@ -190,10 +207,15 @@ export default {
     this.changePatient(this.patient);
   },
   computed: {
-    ...mapGetters(["getPatient", "getDialog", "getAction"]),
+    ...mapGetters(["getPatient", "getDialog", "getDialogDelete", "getAction"]),
   },
   methods: {
-    ...mapActions(["changePatient", "changeDialog", "changeAction"]),
+    ...mapActions([
+      "changePatient",
+      "changeDialog",
+      "changeDialogDelete",
+      "changeAction",
+    ]),
     async crud() {
       switch (this.getAction) {
         case "Cadastrar":
@@ -203,7 +225,7 @@ export default {
           this.editRequest(this.getPatient);
           break;
         case "Excluir":
-          await createPatient(this.getPatient);
+          this.deleteRequest(this.getPatient);
           break;
       }
     },
@@ -216,6 +238,12 @@ export default {
     async editRequest() {
       this.setLoading();
       await editPatient(this.getPatient);
+      this.setLoading();
+      this.refresh();
+    },
+    async deleteRequest() {
+      this.setLoading();
+      await deletePatient(this.getPatient);
       this.setLoading();
       this.refresh();
     },
@@ -278,6 +306,7 @@ export default {
       this.step = 0;
       this.btnNext = "Próximo";
       this.changeDialog(false);
+      this.changeDialogDelete(false);
       this.$eventBus.$emit("refresh-patient", true);
       clearObject(this.getPatient);
     },

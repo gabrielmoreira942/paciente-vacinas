@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <CrudPatient :dialog="dialog"></CrudPatient>
+    <CrudPatient></CrudPatient>
     <v-row>
       <v-col>
         <v-data-table
@@ -22,11 +22,21 @@
               <template v-slot:activator="{ on, attrs }">
                 <span v-bind="attrs" v-on="on">
                   <v-icon color="primary" @click="edit(item)"
-                    >mdi-pencil</v-icon
+                    >mdi-pencil-outline</v-icon
                   >
                 </span>
               </template>
               <span>Editar</span>
+            </v-tooltip>
+            <v-tooltip bottom color="red">
+              <template v-slot:activator="{ on, attrs }">
+                <span v-bind="attrs" v-on="on">
+                  <v-icon color="red" @click="deleteItem(item)"
+                    >mdi-delete</v-icon
+                  >
+                </span>
+              </template>
+              <span>Excluir</span>
             </v-tooltip>
           </template>
         </v-data-table>
@@ -37,7 +47,7 @@
   <script>
 import { dataBr } from "@/utils/FormatDate";
 import CrudPatient from "@/components/modules/patient/CrudPatient.vue";
-import { getPatient } from "@/services/PatientServices";
+import { getPatient, findByIdPatient } from "@/services/PatientServices";
 import { mapActions, mapGetters } from "vuex";
 import { dataEUA } from "@/utils/FormatDate";
 
@@ -48,7 +58,7 @@ export default {
   },
   data() {
     return {
-      dialog: false,
+      dialogDelete: false,
       headers: [
         {
           text: "Paciente",
@@ -79,23 +89,34 @@ export default {
     ...mapGetters(["getPatient", "getDialog"]),
   },
   methods: {
-    ...mapActions(["changePatient", "changeDialog", "changeAction"]),
+    ...mapActions([
+      "changePatient",
+      "changeDialog",
+      "changeDialogDelete",
+      "changeAction",
+    ]),
     async requestPatient() {
       this.items = this.dateBr(await getPatient());
     },
-    view(event) {
+    async view(event) {
+      const { data } = await findByIdPatient(event.id);
+      this.changePatient(data);
       this.$router.push({
         name: "Visualizar Pacientes",
         params: { name: "view" },
-        query: { id: event.id },
       });
+      console.log(a);
     },
     edit(item) {
       let items = { ...item };
       items.birthDate = dataEUA(item.birthDate);
       this.changeAction("Editar");
       this.changePatient(items);
-      this.changeDialog(true);
+    },
+    deleteItem(item) {
+      this.changeAction("Excluir");
+      this.changePatient(item);
+      this.changeDialogDelete(true);
     },
     dateBr(data) {
       let result = data;

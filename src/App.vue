@@ -1,10 +1,7 @@
 <template>
   <v-app>
-    <Navbar></Navbar>
     <v-main>
-      <v-container>
-        <BaseTransition></BaseTransition>
-      </v-container>
+      <router-view></router-view>
     </v-main>
   </v-app>
 </template>

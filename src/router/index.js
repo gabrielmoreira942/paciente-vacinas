@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import Main from '@/views/Main.vue'
 import Patient from '../components/modules/patient/IndexPatient.vue'
 import Show from "../components/modules/patient/ShowPatient.vue"
 import Vaccine from '../components/modules/vaccine/IndexVaccine.vue'
@@ -9,25 +10,42 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'Dashboard',
-    component: HomeView
-  },
-  {
-    path: '/patients',
-    name: 'Consultar Pacientes',
-    component: Patient,
+    component: Main,
     children: [
       {
-        path: ':url',
-        name: 'Visualizar Pacientes',
-        component: Show,
-      }
+        path: '',
+        name: 'Dashboard',
+        component: HomeView,
+      },
     ]
   },
   {
-    path: '/vaccines',
-    name: 'Consultar Vacinas',
-    component: Vaccine
+    path: '/patients',
+    component: Main,
+    children: [
+      {
+        path: '',
+        name: 'Consultar Pacientes',
+        component: Patient,
+      },
+      {
+        path: ':name',
+        name: 'Visualizar Pacientes',
+        component: Show,
+      },
+    ]
+  },
+
+  {
+    path: '/',
+    component: Main,
+    children: [
+      {
+        path: '/vaccines',
+        name: 'Consultar Vacinas',
+        component: Vaccine
+      }
+    ]
   },
   {
     path: '/about',
