@@ -1,7 +1,7 @@
   <template>
   <div>
     <div>
-      <div class="d-flex">
+      <div class="d-flex mt-5">
         <v-card class="mx-auto" max-width="344">
           <v-img src="../assets/patient_logo.png" height="200px"></v-img>
 
