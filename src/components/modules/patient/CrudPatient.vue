@@ -102,6 +102,7 @@
                   v-model="getPatient.address.zipCode"
                   label="CEP"
                   id="cep"
+                  maxlength="8"
                   outlined
                 ></v-text-field>
                 <v-text-field
@@ -172,7 +173,7 @@ import {
   deletePatient,
 } from "@/services/PatientServices";
 import { mapActions, mapGetters } from "vuex";
-
+import axios from "axios"
 export default {
   props: {},
   data() {
@@ -210,6 +211,12 @@ export default {
     ...mapGetters(["getPatient", "getDialogPatient", "getDialogDeletePatient", "getAction"]),
   },
   methods: {
+    viacep(e){
+      axios.get(`https://viacep.com.br/ws/${e}/json`).then((response) => {
+        console.log(response);
+      })
+      //
+    },
     ...mapActions([
       "changePatient",
       "changeDialogPatient",
@@ -313,6 +320,13 @@ export default {
     // !SECTION
   },
   watch: {
+    "getPatient.address.zipCode": {
+      handler(e) {
+        if(e.length == 8) {
+          this.viacep(e)
+        }
+      },
+    },  
     getDialogPatient(e) {
       if (e == false) {
         clearObject(this.getPatient);
