@@ -7,20 +7,20 @@ export default ({
     },
     getters: {
         getPatient: state => state.patient,
-        getDialog: state => state.dialog,
-        getDialogDelete: state => state.dialogDelete,
+        getDialogPatient: state => state.dialog,
+        getDialogDeletePatient: state => state.dialogDelete,
         getAction: state => state.action,
     },
     mutations: {
         setPatient: (state, data) => state.patient = data,
-        setDialog: (state, data) => state.dialog = data,
-        setDialogDelete: (state, data) => state.dialogDelete = data,
+        setDialogPatient: (state, data) => state.dialog = data,
+        setDialogDeletePatient: (state, data) => state.dialogDelete = data,
         setAction: (state, data) => state.action = data,
     },
     actions: {
         changePatient: ({ commit }, data) => commit("setPatient", data),
-        changeDialog: ({ commit }, data) => commit("setDialog", data),
-        changeDialogDelete: ({ commit }, data) => commit("setDialogDelete", data),
+        changeDialogPatient: ({ commit }, data) => commit("setDialogPatient", data),
+        changeDialogDeletePatient: ({ commit }, data) => commit("setDialogDeletePatient", data),
         changeAction: ({ commit }, data) => commit("setAction", data),
     },
 })

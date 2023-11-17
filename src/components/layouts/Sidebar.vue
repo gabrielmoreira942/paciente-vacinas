@@ -17,7 +17,7 @@
           </v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item link class="mt-2">
+      <v-list-item link class="mt-2" to="vaccine_manager">
         <v-list-item-content>
           <v-list-item-title
             >Administração

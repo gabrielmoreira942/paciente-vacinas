@@ -86,13 +86,13 @@ export default {
     this.refreshPatient();
   },
   computed: {
-    ...mapGetters(["getPatient", "getDialog"]),
+    ...mapGetters(["getPatient", "getDialogPatient"]),
   },
   methods: {
     ...mapActions([
       "changePatient",
-      "changeDialog",
-      "changeDialogDelete",
+      "changeDialogPatient",
+      "changeDialogDeletePatient",
       "changeAction",
     ]),
     async requestPatient() {
@@ -111,13 +111,13 @@ export default {
       items.birthDate = dataEUA(item.birthDate);
       this.changeAction("Editar");
       this.changePatient(items);
-      this.changeDialog(true);
+      this.changeDialogPatient(true);
 
     },
     deleteItem(item) {
       this.changeAction("Excluir");
-      this.changePatient(item);
-      this.changeDialogDelete(true);
+      this.changePatient({ ...item });
+      this.changeDialogDeletePatient(true);
     },
     dateBr(data) {
       let result = data;

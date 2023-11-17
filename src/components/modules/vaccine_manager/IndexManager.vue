@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <CrudVaccine></CrudVaccine>
+    <CrudManager></CrudManager>
     <v-row>
       <v-col>
         <v-data-table
@@ -8,66 +8,126 @@
           :items="items"
           :items-per-page="10"
           class="elevation-1"
-          :loading="loadingGrid"
-        ></v-data-table>
+        >
+          <template v-slot:[`item.actions`]="{ item }">
+            <v-tooltip bottom color="green">
+              <template v-slot:activator="{ on, attrs }">
+                <span v-bind="attrs" v-on="on">
+                  <v-icon color="green" @click="view(item)">mdi-eye</v-icon>
+                </span>
+              </template>
+              <span>Visualizar</span>
+            </v-tooltip>
+            <v-tooltip bottom color="primary">
+              <template v-slot:activator="{ on, attrs }">
+                <span v-bind="attrs" v-on="on">
+                  <v-icon color="primary" @click="edit(item)"
+                    >mdi-pencil-outline</v-icon
+                  >
+                </span>
+              </template>
+              <span>Editar</span>
+            </v-tooltip>
+            <v-tooltip bottom color="red">
+              <template v-slot:activator="{ on, attrs }">
+                <span v-bind="attrs" v-on="on">
+                  <v-icon color="red" @click="deleteItem(item)"
+                    >mdi-delete</v-icon
+                  >
+                </span>
+              </template>
+              <span>Excluir</span>
+            </v-tooltip>
+          </template>
+        </v-data-table>
       </v-col>
     </v-row>
   </v-container>
-</template>
-  
+</template> 
   <script>
 import { dataBr } from "@/utils/FormatDate";
-import CrudVaccine from "@/components/modules/vaccine/CrudVaccine.vue";
-import { getVaccine } from "@/services/VaccineServices";
+import CrudManager from "@/components/modules/vaccine_manager/CrudManager.vue";
+import { getPatient, findByIdPatient } from "@/services/PatientServices";
+import { mapActions, mapGetters } from "vuex";
+import { dataEUA } from "@/utils/FormatDate";
+
 export default {
   name: "HelloWorld",
   components: {
-    CrudVaccine,
+    CrudManager,
   },
   data() {
     return {
-      loadingGrid: false,
+      dialogDelete: false,
       headers: [
         {
-          text: "Fabricante",
+          text: "Paciente",
           align: "start",
-          value: "manufacturer",
+          value: "firstName",
         },
         {
-          text: "Lote",
-          value: "batch",
+          text: "Sobrenome",
+          value: "lastName",
         },
-        { text: "Validade", value: "validateDate" },
-        { text: "Quantidade de doses", value: "amountOfDose" },
-        { text: "Intervalo entre doses", value: "intervalBetweenDoses" },
+        { text: "CPF", value: "cpf" },
+        { text: "Gênero", value: "gender" },
+        { text: "Data de nascimento", value: "birthDate" },
         { text: "Identificador", value: "id" },
+        { text: "Ações", value: "actions" },
       ],
       items: [],
     };
   },
   beforeDestroy() {
-    this.$eventBus.$off("refresh-vaccine");
+    this.$eventBus.$off("refresh-patient");
   },
   async created() {
-    this.refreshVaccine();
-    this.requestVaccine();
+    this.requestPatient();
+    this.refreshPatient();
+  },
+  computed: {
+    ...mapGetters(["getVaccineManager", "getVaccineManagerDialog"]),
   },
   methods: {
-    async requestVaccine() {
-      this.items = this.dateBr(await getVaccine());
+    ...mapActions([
+      "changePatient",
+      "changeVaccineManagerDialog",
+      "changeActionVaccineManager",
+    ]),
+    async requestPatient() {
+      this.items = this.dateBr(await getPatient());
+    },
+    async view(event) {
+      const { data } = await findByIdPatient(event.id);
+      this.changePatient(data);
+      this.$router.push({
+        name: "Visualizar Pacientes",
+        params: { name: "view" },
+      });
+    },
+    edit(item) {
+      let items = { ...item };
+      items.birthDate = dataEUA(item.birthDate);
+      this.changeActionVaccineManager("Editar");
+      this.changePatient(items);
+      this.changeVaccineManagerDialog(true);
+    },
+    deleteItem(item) {
+      this.changeActionVaccineManager("Excluir");
+      this.changePatient(item);
     },
     dateBr(data) {
       let result = data;
       data.map((item, i) => {
-        result[i].validateDate = dataBr(item.validateDate);
+        result[i].birthDate = dataBr(item.birthDate);
       });
       return result;
     },
-    refreshVaccine() {
-      this.$eventBus.$on("refresh-vaccine", async () => {
+    refreshPatient() {
+      this.$eventBus.$on("refresh-patient", async () => {
         this.items = [];
         this.loadingGrid = true;
-        this.requestVaccine();
+        this.requestPatient();
         this.loadingGrid = false;
       });
     },

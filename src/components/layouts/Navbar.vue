@@ -1,7 +1,7 @@
 <template>
   <div>
     <Sidebar :drawer="drawer"></Sidebar>
-    <v-app-bar app color="green">
+    <v-app-bar app :color="navbarColor">
       <v-app-bar-nav-icon
         @click.stop="drawer = !drawer"
         color="white"
@@ -16,20 +16,36 @@
 
 
 <script>
-import Sidebar from "./Sidebar"
+import Sidebar from "./Sidebar";
 export default {
   name: "PacienteVacinasNavbar",
-components: {
-    Sidebar
-},
+  components: {
+    Sidebar,
+  },
   data() {
     return {
       drawer: false,
     };
   },
-  mounted() {},
+  mounted() {
+    console.log();
+  },
 
   methods: {},
+  computed: {
+    navbarColor() {
+      switch (this.$route.fullPath) {
+        case "/patients":
+          return "red";
+        case "/patients/view":
+          return "red";
+        case "/vaccines":
+          return "green";
+        case "/vaccine_manager":
+          return "blue";
+      }
+    },
+  },
 };
 </script>
 

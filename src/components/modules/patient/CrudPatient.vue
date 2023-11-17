@@ -3,7 +3,7 @@
     <v-row>
       <v-col class="d-flex justify-end">
         <!-- <v-form > -->
-        <v-dialog max-width="600" v-model="getDialog" persistent>
+        <v-dialog max-width="600" v-model="getDialogPatient" persistent>
           <template v-slot:activator="{ on, attrs }">
             <v-btn
               @click="createDialog()"
@@ -145,14 +145,14 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-        <v-dialog v-model="getDialogDelete" max-width="500px">
+        <v-dialog v-model="getDialogDeletePatient" max-width="500px">
           <v-card>
             <v-card-title>Confirmação de Exclusão</v-card-title>
             <v-card-text>
               Tem certeza de que deseja excluir este item?
             </v-card-text>
             <v-card-actions class="justify-end">
-              <v-btn @click="changeDialogDelete(false)">Cancelar</v-btn>
+              <v-btn @click="changeDialogDeletePatient(false)">Cancelar</v-btn>
               <v-btn color="error" @click="crud()">Confirmar</v-btn>
             </v-card-actions>
           </v-card>
@@ -207,13 +207,13 @@ export default {
     this.changePatient(this.patient);
   },
   computed: {
-    ...mapGetters(["getPatient", "getDialog", "getDialogDelete", "getAction"]),
+    ...mapGetters(["getPatient", "getDialogPatient", "getDialogDeletePatient", "getAction"]),
   },
   methods: {
     ...mapActions([
       "changePatient",
-      "changeDialog",
-      "changeDialogDelete",
+      "changeDialogPatient",
+      "changeDialogDeletePatient",
       "changeAction",
     ]),
     async crud() {
@@ -269,7 +269,7 @@ export default {
     },
     stepBack() {
       if (this.step == 0) {
-        return this.changeDialog(false);
+        return this.changeDialogPatient(false);
       }
       this.step -= 1;
       switch (this.step) {
@@ -285,7 +285,7 @@ export default {
     },
     createDialog() {
       this.changeAction("Cadastrar");
-      this.changeDialog(true);
+      this.changeDialogPatient(true);
     },
     // !SECTION
 
@@ -305,20 +305,20 @@ export default {
     refresh() {
       this.step = 0;
       this.btnNext = "Próximo";
-      this.changeDialog(false);
-      this.changeDialogDelete(false);
+      this.changeDialogPatient(false);
+      this.changeDialogDeletePatient(false);
       this.$eventBus.$emit("refresh-patient", true);
       clearObject(this.getPatient);
     },
     // !SECTION
   },
   watch: {
-    getDialog(e) {
+    getDialogPatient(e) {
       if (e == false) {
         clearObject(this.getPatient);
       }
     },
-    getDialogDelete(e) {
+    getDialogDeletePatient(e) {
       if (e == false) {
         clearObject(this.getPatient);
       }

@@ -5,6 +5,7 @@ import Main from '@/views/Main.vue'
 import Patient from '../components/modules/patient/IndexPatient.vue'
 import Show from "../components/modules/patient/ShowPatient.vue"
 import Vaccine from '../components/modules/vaccine/IndexVaccine.vue'
+import VaccineManager from '../components/modules/vaccine_manager/IndexManager.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -37,13 +38,24 @@ const routes = [
   },
 
   {
-    path: '/',
+    path: '/vaccines',
     component: Main,
     children: [
       {
-        path: '/vaccines',
+        path: '',
         name: 'Consultar Vacinas',
         component: Vaccine
+      }
+    ]
+  },
+  {
+    path: '/vaccine_manager',
+    component: Main,
+    children: [
+      {
+        path: '',
+        name: 'Administrar vacinação',
+        component: VaccineManager
       }
     ]
   },

@@ -2,79 +2,104 @@
   <div>
     <v-row>
       <v-col class="d-flex justify-end">
-        <v-dialog max-width="600" v-model="dialog" persistent>
+        <v-dialog max-width="600" v-model="getVaccineManagerDialog" persistent>
           <template v-slot:activator="{ on, attrs }">
             <v-btn
-              @click="(btnAction = 'Cadastrar'), (dialog = true)"
+              @click="createDialog()"
               color="primary"
               v-bind="attrs"
               v-on="on"
+              id="cadastrar_adm_vacina"
               >Cadastrar</v-btn
             >
           </template>
-          <v-form ref="send" @submit.prevent="crud()">
+          <v-form @submit.prevent="crud()" ref="send">
             <v-card>
               <v-toolbar color="primary" dark>
-                {{ btnAction }} Vacina
+                {{ getActionVaccineManager }} Vacinação
               </v-toolbar>
               <v-card-text>
-                <div>
-                  <v-text-field
-                    :rules="rules"
-                    v-model="vaccine.manufacturer"
-                    class="mt-3"
-                    label="Fabricante"
-                    outlined
-                  ></v-text-field>
-                  <v-text-field
-                    :rules="rules"
-                    v-model="vaccine.batch"
-                    label="Lote"
-                    outlined
-                  ></v-text-field>
-                  <v-text-field
-                    :rules="rules"
-                    v-model="vaccine.validateDate"
-                    label="Validade"
-                    outlined
-                    type="date"
-                  ></v-text-field>
-                  <v-text-field
-                    :rules="rules"
-                    v-model="vaccine.amountOfDose"
-                    label="Quantidade de doses"
-                    outlined
-                  ></v-text-field>
-                  <v-text-field
-                    :rules="rules"
-                    type="number"
-                    v-model="vaccine.intervalBetweenDoses"
-                    label="Intervalo entre doses"
-                    outlined
-                  ></v-text-field>
-                </div>
+                <!-- ANCHOR - ADMINISTRAR VACINAS -->
+                <v-text-field
+                  class="mt-3"
+                  label="Data da vacinação"
+                  outlined
+                  v-model="getVaccineManager.vaccineDate"
+                  type="date"
+                  :rules="rules"
+                  :max="currentDate()"
+                ></v-text-field>
+                <v-select
+                  label="Paciente"
+                  id="paciente"
+                  item-text="name"
+                  item-value="id"
+                  :rules="rules"
+                  :items="patientSelect"
+                  v-model="getVaccineManager.idPatient"
+                  clearable
+                  outlined
+                ></v-select>
+                <v-select
+                  label="Vacina"
+                  id="vacina"
+                  item-text="manufacturer"
+                  :rules="rules"
+                  item-value="id"
+                  :items="vaccineSelect"
+                  v-model="getVaccineManager.idVaccine"
+                  clearable
+                  outlined
+                ></v-select>
+                <v-text-field
+                  label="Nome do profissional de enfermagem"
+                  :rules="rules"
+                  id="nurse"
+                  v-model="getVaccineManager.nurseProfessional.name"
+                  outlined
+                ></v-text-field>
+                <v-text-field
+                  label="CPF do profissional de enfermagem"
+                  :rules="rules"
+                  v-model="getVaccineManager.nurseProfessional.cpf"
+                  id="cpf"
+                  outlined
+                ></v-text-field>
               </v-card-text>
               <v-card-actions class="justify-end">
-                <v-btn :loading="loadingBtn" text @click="dialog = false"
-                  >Fechar</v-btn
+                <v-btn @click="closeDialog()" text>Fechar</v-btn>
+                <v-btn
+                  v-if="btnNext == 'Cadastrar'"
+                  id="salvar"
+                  color="primary"
+                  type="submit"
+                  :loading="loadingBtn"
+                  >{{ btnNext }}</v-btn
                 >
                 <v-btn
-                  type="submit"
-                  v-if="btnAction == 'Cadastrar'"
+                  v-if="btnNext == 'Editar'"
                   color="primary"
                   :loading="loadingBtn"
-                  >{{ btnAction }}</v-btn
-                >
-                <v-btn
                   type="submit"
-                  v-if="btnAction == 'Editar'"
-                  color="primary"
-                  :loading="loadingBtn"
-                  >{{ btnAction }}</v-btn
+                  >{{ btnNext }}</v-btn
                 >
               </v-card-actions>
             </v-card>
           </v-form>
+        </v-dialog>
+        <v-dialog v-model="getVaccineManagerDialogDelete" max-width="500px">
+          <v-card>
+            <v-card-title>Confirmação de Exclusão</v-card-title>
+            <v-card-text>
+              Tem certeza de que deseja excluir este item?
+            </v-card-text>
+            <v-card-actions class="justify-end">
+              <v-btn @click="changeVaccineManagerDialogDelete(false)"
+                >Cancelar</v-btn
+              >
+              <v-btn color="error" @click="crud()">Confirmar</v-btn>
+            </v-card-actions>
+          </v-card>
         </v-dialog>
       </v-col>
     </v-row>
@@ -83,60 +108,138 @@
 
 <script>
 import { clearObject } from "@/utils/ClearValues";
-import { createVaccine } from "@/services/VaccineServices";
+import {
+  editPatient,
+  deletePatient,
+  getPatient,
+} from "@/services/PatientServices";
+import { getVaccine } from "@/services/VaccineServices";
+import { createVaccineManager } from "@/services/VaccineManagerServices";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
+  props: {},
   data() {
     return {
-      dialog: false,
       loadingBtn: false,
-      btnAction: "",
+      step: 0,
+      patientSelect: [],
       rules: [(v) => !!v || "Campo obrigatório"],
-      btnBack: "Fechar",
-      vaccine: {
-        manufacturer: "",
-        batch: "",
-        validateDate: "",
-        amountOfDose: "",
-        intervalBetweenDoses: "",
+      vaccineSelect: [],
+      btnNext: "Cadastrar",
+      vaccineManager: {
+        idPatient: "",
+        idVaccine: "",
+        vaccineDate: "",
+        nurseProfessional: {
+          name: "",
+          cpf: "",
+        },
       },
     };
   },
+  async created() {
+    this.getPatientRequest();
+    this.vaccineSelect = await getVaccine();
+    this.changeVaccineManager(this.vaccineManager);
+  },
+  computed: {
+    ...mapGetters([
+      "getVaccineManager",
+      "getVaccineManagerDialog",
+      "getActionVaccineManager",
+    ]),
+  },
   methods: {
+    ...mapActions([
+      "changeVaccineManager",
+      "changeVaccineManagerDialog",
+      "changeVaccineManagerDialogDelete",
+      "changeActionVaccineManager",
+    ]),
     async crud() {
       if (this.$refs.send.validate()) {
-        switch (this.btnAction) {
+        switch (this.getActionVaccineManager) {
           case "Cadastrar":
-            this.createRequest();
+            this.createRequest(this.getVaccineManager);
             break;
           case "Editar":
-            this.setLoading();
-            await createVaccine(this.vaccine);
-            this.setLoading();
-            this.refresh();
+            this.editRequest(this.getVaccineManager);
             break;
           case "Excluir":
-            this.setLoading();
-            await createVaccine(this.vaccine);
-            this.setLoading();
-            this.refresh();
+            this.deleteRequest(this.getVaccineManager);
             break;
         }
       }
     },
     async createRequest() {
       this.setLoading();
-      await createVaccine(this.vaccine);
+      await createVaccineManager(this.getVaccineManager);
       this.setLoading();
       this.refresh();
+    },
+    async editRequest() {
+      this.setLoading();
+      await editPatient(this.getVaccineManager);
+      this.setLoading();
+      this.refresh();
+    },
+    async deleteRequest() {
+      this.setLoading();
+      await deletePatient(this.getVaccineManager);
+      this.setLoading();
+      this.refresh();
+    },
+    async getPatientRequest() {
+      let patient = [];
+      patient = await getPatient();
+      patient.map((item, i) => {
+        patient[i].name = patient[i].firstName + " " + patient[i].lastName;
+      });
+      this.patientSelect = patient;
+    },
+    createDialog() {
+      this.changeActionVaccineManager("Cadastrar");
+      this.changeVaccineManagerDialog(true);
+    },
+    closeDialog() {
+      this.changeVaccineManagerDialog(false);
+    },
+    // !SECTION
+
+    // SECTION - UTILS
+    currentDate() {
+      const today = new Date();
+      const year = today.getFullYear();
+      let month = today.getMonth() + 1;
+      let day = today.getDate();
+      month = month < 10 ? `0${month}` : month;
+      day = day < 10 ? `0${day}` : day;
+      return `${year}-${month}-${day}`;
     },
     setLoading() {
       this.loadingBtn = !this.loadingBtn;
     },
     refresh() {
-      this.$refs.send.reset();
-      this.dialog = false;
-      this.$eventBus.$emit("refresh-vaccine", true);
+      this.step = 0;
+      this.btnNext = "Cadastrar";
+      this.changeVaccineManagerDialog(false);
+      this.changeVaccineManagerDialogDelete(false);
+      this.$eventBus.$emit("refresh-patient", true);
+      clearObject(this.getVaccineManager);
+    },
+    // !SECTION
+  },
+  watch: {
+    getVaccineManagerDialog(e) {
+      if (e == false) {
+        clearObject(this.getVaccineManager);
+      }
+    },
+    getVaccineManagerDialogDelete(e) {
+      if (e == false) {
+        clearObject(this.getVaccineManager);
+      }
     },
   },
 };
