@@ -312,5 +312,17 @@ export default {
     },
     // !SECTION
   },
+  watch: {
+    getDialog(e) {
+      if (e == false) {
+        clearObject(this.getPatient);
+      }
+    },
+    getDialogDelete(e) {
+      if (e == false) {
+        clearObject(this.getPatient);
+      }
+    },
+  },
 };
 </script>
