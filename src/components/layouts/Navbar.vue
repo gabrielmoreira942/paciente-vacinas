@@ -39,6 +39,8 @@ export default {
           return "red";
         case "/patients/view":
           return "red";
+        case "/":
+          return "green";
         case "/vaccines":
           return "green";
         case "/vaccine_manager":
