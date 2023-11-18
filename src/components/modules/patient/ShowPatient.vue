@@ -155,13 +155,14 @@ export default {
   name: "PacienteVacinasShowPatient",
 
   data() {
-    return {};
+    return {
+      getPatient: {},
+    };
   },
   created() {
+    this.getPatient = JSON.parse(localStorage.getItem("storagePatient"));
   },
-  computed: {
-    ...mapGetters(["getPatient"]),
-  },
+  computed: {},
 };
 </script>
 

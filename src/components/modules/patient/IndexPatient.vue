@@ -13,10 +13,10 @@
             <v-tooltip bottom color="green">
               <template v-slot:activator="{ on, attrs }">
                 <span v-bind="attrs" v-on="on">
-                  <v-icon color="green" @click="view(item)">mdi-eye</v-icon>
+                  <v-icon color="green" @click="view(item)">mdi-eye-plus</v-icon>
                 </span>
               </template>
-              <span>Visualizar</span>
+              <span>Visualizar tudo</span>
             </v-tooltip>
             <v-tooltip bottom color="primary">
               <template v-slot:activator="{ on, attrs }">
@@ -47,7 +47,7 @@
   <script>
 import { dataBr } from "@/utils/FormatDate";
 import CrudPatient from "@/components/modules/patient/CrudPatient.vue";
-import { getPatient, findByIdPatient } from "@/services/PatientServices";
+import { getPatient } from "@/services/PatientServices";
 import { mapActions, mapGetters } from "vuex";
 import { dataEUA } from "@/utils/FormatDate";
 
@@ -99,8 +99,7 @@ export default {
       this.items = this.dateBr(await getPatient());
     },
     async view(event) {
-      const { data } = await findByIdPatient(event.id);
-      this.changePatient(data);
+      this.changePatient(event);
       this.$router.push({
         name: "Visualizar Pacientes",
         params: { name: "view" },

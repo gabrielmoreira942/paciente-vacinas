@@ -12,7 +12,10 @@ export default ({
         getAction: state => state.action,
     },
     mutations: {
-        setPatient: (state, data) => state.patient = data,
+        setPatient: (state, data) => (
+            state.patient = data,
+            localStorage.setItem('storagePatient', JSON.stringify(data)
+            )),
         setDialogPatient: (state, data) => state.dialog = data,
         setDialogDeletePatient: (state, data) => state.dialogDelete = data,
         setAction: (state, data) => state.action = data,

@@ -28,7 +28,6 @@ export default {
     };
   },
   mounted() {
-    console.log();
   },
 
   methods: {},
@@ -44,6 +43,8 @@ export default {
         case "/vaccines":
           return "green";
         case "/vaccine_manager":
+          return "blue";
+        case "/vaccine_manager/view":
           return "blue";
       }
     },

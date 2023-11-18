@@ -69,19 +69,10 @@
               <v-card-actions class="justify-end">
                 <v-btn @click="closeDialog()" text>Fechar</v-btn>
                 <v-btn
-                  v-if="btnNext == 'Cadastrar'"
-                  id="salvar"
-                  color="primary"
-                  type="submit"
-                  :loading="loadingBtn"
-                  >{{ btnNext }}</v-btn
-                >
-                <v-btn
-                  v-if="btnNext == 'Editar'"
                   color="primary"
                   :loading="loadingBtn"
                   type="submit"
-                  >{{ btnNext }}</v-btn
+                  >{{ getActionVaccineManager }}</v-btn
                 >
               </v-card-actions>
             </v-card>
@@ -114,7 +105,7 @@ import {
   getPatient,
 } from "@/services/PatientServices";
 import { getVaccine } from "@/services/VaccineServices";
-import { createVaccineManager } from "@/services/VaccineManagerServices";
+import { createVaccineManager, editVaccineManager } from "@/services/VaccineManagerServices";
 import { mapActions, mapGetters } from "vuex";
 
 export default {
@@ -180,7 +171,7 @@ export default {
     },
     async editRequest() {
       this.setLoading();
-      await editPatient(this.getVaccineManager);
+      await editVaccineManager(this.getVaccineManager);
       this.setLoading();
       this.refresh();
     },
@@ -222,7 +213,6 @@ export default {
     },
     refresh() {
       this.step = 0;
-      this.btnNext = "Cadastrar";
       this.changeVaccineManagerDialog(false);
       this.changeVaccineManagerDialogDelete(false);
       this.$eventBus.$emit("refresh-patient", true);
