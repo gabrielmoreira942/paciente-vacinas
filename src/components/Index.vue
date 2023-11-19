@@ -21,7 +21,7 @@
 
           <v-card-title> Administrar Vacinas </v-card-title>
 
-          <v-btn color="primary" to="vaccines" text> Acessar </v-btn>
+          <v-btn color="primary" to="vaccine_manager" text> Acessar </v-btn>
         </v-card>
       </div>
       <div>

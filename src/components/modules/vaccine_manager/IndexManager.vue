@@ -84,7 +84,7 @@ export default {
           text: "Intervalo entre doses",
           value: "vaccine.intervalBetweenDoses",
         },
-        { text: "Data de nascimento", value: "listOfDoses" },
+        { text: "Data de nascimento", value: "vaccineDate" },
         { text: "Identificador", value: "id" },
         { text: "Ações", value: "actions" },
       ],
@@ -137,6 +137,13 @@ export default {
         this.requestPatient();
         this.loadingGrid = false;
       });
+    },
+    dealings(items) {
+      let result = [];
+      items.listOfDoses.map((item, i) => {
+        result.push(dataBr(item));
+      });
+      return result
     },
   },
 };

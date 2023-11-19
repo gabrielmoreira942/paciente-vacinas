@@ -10,7 +10,7 @@ export default ({
         getVaccineManagerDialog: state => state.vaccineManagerDialog,
     },
     mutations: {
-        setVaccineManager: (state, data) => state.vaccineManager = (
+        setVaccineManager: (state, data) => (
             state.vaccineManager = data,
             localStorage.setItem('storageVaccineManager', JSON.stringify(data)
             )),

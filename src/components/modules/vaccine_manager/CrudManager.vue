@@ -133,6 +133,7 @@ export default {
     this.getPatientRequest();
     this.vaccineSelect = await getVaccine();
     this.changeVaccineManager(this.vaccineManager);
+    console.log(this.getVaccineManager);
   },
   computed: {
     ...mapGetters([
