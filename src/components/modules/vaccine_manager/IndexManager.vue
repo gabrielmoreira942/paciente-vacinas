@@ -1,6 +1,14 @@
 <template>
   <v-container>
-    <CrudManager></CrudManager>
+    <v-row>
+      <v-col>
+        <SearchManager></SearchManager>
+      </v-col>
+      <v-col>
+        <CrudManager></CrudManager>
+      </v-col>
+    </v-row>
+
     <v-row>
       <v-col>
         <v-data-table
@@ -23,9 +31,7 @@
             <v-tooltip bottom color="primary">
               <template v-slot:activator="{ on, attrs }">
                 <span v-bind="attrs" v-on="on">
-                  <v-icon color="primary" @click="edit(item)"
-                    >mdi-plus</v-icon
-                  >
+                  <v-icon color="primary" @click="edit(item)">mdi-plus</v-icon>
                 </span>
               </template>
               <span>Adicionar vacinação</span>
@@ -49,6 +55,7 @@
   <script>
 import { dataBr } from "@/utils/FormatDate";
 import CrudManager from "@/components/modules/vaccine_manager/CrudManager.vue";
+import SearchManager from "@/components/modules/vaccine_manager/SearchManager.vue";
 import { getVaccineManager } from "@/services/VaccineManagerServices";
 import { mapActions, mapGetters } from "vuex";
 import { dataEUA } from "@/utils/FormatDate";
@@ -57,6 +64,7 @@ export default {
   name: "HelloWorld",
   components: {
     CrudManager,
+    SearchManager,
   },
   data() {
     return {

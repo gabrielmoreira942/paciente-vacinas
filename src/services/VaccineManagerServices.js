@@ -10,6 +10,22 @@ export async function getVaccineManager() {
         return errorMessage(error);
     }
 }
+export async function filterVaccineManager(filter) {
+    try {
+        const { data } = await vue.$api.manager.get(`vaccine-manager/manufacturer/${filter.manufacturer}?state=${filter.state}`);
+        return data;
+    } catch (error) {
+        return errorMessage(error);
+    }
+}
+export async function filterPatientManager(id) {
+    try {
+        const { data } = await vue.$api.manager.get(`vaccine-manager/patient/${id}`);
+        return data;
+    } catch (error) {
+        return errorMessage(error);
+    }
+}
 
 export async function createVaccineManager(data) {
     try {

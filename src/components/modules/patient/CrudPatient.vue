@@ -34,12 +34,13 @@
                   id="sobrenome"
                   outlined
                 ></v-text-field>
-                <v-text-field
+                <v-select
+                  :items="['M', 'F']"
                   v-model="getPatient.gender"
                   label="Gênero"
                   id="genero"
                   outlined
-                ></v-text-field>
+                ></v-select>
                 <v-text-field
                   v-model="getPatient.cpf"
                   label="CPF"
