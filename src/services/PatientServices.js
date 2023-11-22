@@ -1,6 +1,7 @@
 import Vue from 'vue';
 const vue = new Vue();
 import Swal from 'sweetalert2';
+import { errorMessage } from './errors';
 export async function getPatient() {
     try {
         const { data } = await vue.$api.patient.get('patient');
@@ -21,7 +22,8 @@ export async function createPatient(data) {
         });
         return result;
     } catch (error) {
-        getErrors(error)
+        return errorMessage(error)
+
     }
 }
 export async function editPatient(data) {
@@ -36,7 +38,7 @@ export async function editPatient(data) {
         });
         return result;
     } catch (error) {
-        getErrors(error)
+        return errorMessage(error)
     }
 }
 
@@ -52,7 +54,7 @@ export async function deletePatient(data) {
         });
         return result;
     } catch (error) {
-        getErrors(error)
+        return errorMessage(error)
     }
 }
 export async function findByIdPatient(id) {
@@ -67,7 +69,7 @@ export async function findByIdPatient(id) {
         // });
         return result;
     } catch (error) {
-        getErrors(error)
+        return errorMessage(error)
     }
 }
 
@@ -81,16 +83,16 @@ export async function mockPatient() {
     }
 }
 
-function getErrors(error) {
-    let errorMessage = ''
-    for (const field in error.response.data.mensagem) {
-        errorMessage += `${error.response.data.mensagem[field]}<br>`;
-    }
-    Swal.fire({
-        icon: "error",
-        title: "Aviso!",
-        html: errorMessage,
-        showConfirmButton: true,
-        timerProgressBar: true,
-    });
-}
+// function errorMessage(error) {
+//     let errorMessage = ''
+//     for (const field in error.response.data.mensagem) {
+//         errorMessage += `${error.response.data.mensagem[field]}<br>`;
+//     }
+//     Swal.fire({
+//         icon: "error",
+//         title: "Aviso!",
+//         html: errorMessage,
+//         showConfirmButton: true,
+//         timerProgressBar: true,
+//     });
+// }

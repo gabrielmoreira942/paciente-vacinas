@@ -18,19 +18,19 @@
                   >
                 </span>
               </template>
-              <span>Visualizar tudo</span>
+              <span>Ver mais</span>
             </v-tooltip>
             <v-tooltip bottom color="primary">
               <template v-slot:activator="{ on, attrs }">
                 <span v-bind="attrs" v-on="on">
                   <v-icon color="primary" @click="edit(item)"
-                    >mdi-pencil-outline</v-icon
+                    >mdi-plus</v-icon
                   >
                 </span>
               </template>
-              <span>Editar</span>
+              <span>Adicionar vacinação</span>
             </v-tooltip>
-            <v-tooltip bottom color="red">
+            <!-- <v-tooltip bottom color="red">
               <template v-slot:activator="{ on, attrs }">
                 <span v-bind="attrs" v-on="on">
                   <v-icon color="red" @click="deleteItem(item)"
@@ -39,7 +39,7 @@
                 </span>
               </template>
               <span>Excluir</span>
-            </v-tooltip>
+            </v-tooltip> -->
           </template>
         </v-data-table>
       </v-col>
@@ -79,12 +79,12 @@ export default {
           text: "Sobrenome",
           value: "patient.lastName",
         },
-        { text: "Qty doses", value: "vaccine.amountOfDose" },
+        { text: "Qtd doses", value: "vaccine.amountOfDose" },
         {
           text: "Intervalo entre doses",
           value: "vaccine.intervalBetweenDoses",
         },
-        { text: "Data de nascimento", value: "vaccineDate" },
+        { text: "Data da vacina", value: "vaccineDate" },
         { text: "Identificador", value: "id" },
         { text: "Ações", value: "actions" },
       ],
@@ -106,9 +106,10 @@ export default {
       "changeVaccineManager",
       "changeVaccineManagerDialog",
       "changeActionVaccineManager",
+      "changeDisabledVaccineManager",
     ]),
     async requestPatient() {
-      this.items = await getVaccineManager();
+      this.items = this.dateBr(await getVaccineManager());
     },
     async view(event) {
       this.changeVaccineManager(event);
@@ -119,12 +120,13 @@ export default {
     },
     edit(item) {
       let items = { ...item };
-      items.vaccineDate = dataEUA(dataBr(items.vaccineDate));
+      items.vaccineDate = dataEUA(items.vaccineDate);
       items.idPatient = items.patient.id;
       items.idVaccine = items.vaccine.id;
-      this.changeActionVaccineManager("Editar");
+      this.changeActionVaccineManager("Adicionar");
       this.changeVaccineManager(items);
       this.changeVaccineManagerDialog(true);
+      this.changeDisabledVaccineManager(true);
     },
     deleteItem(item) {
       this.changeActionVaccineManager("Excluir");
@@ -143,7 +145,15 @@ export default {
       items.listOfDoses.map((item, i) => {
         result.push(dataBr(item));
       });
-      return result
+      return result;
+    },
+    // ANCHOR - Formatação data BR in array
+    dateBr(data) {
+      let result = data;
+      data.map((item, i) => {
+        result[i].vaccineDate = dataBr(item.vaccineDate);
+      });
+      return result;
     },
   },
 };

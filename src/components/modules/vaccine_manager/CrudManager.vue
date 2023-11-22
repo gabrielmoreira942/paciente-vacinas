@@ -38,6 +38,7 @@
                   :items="patientSelect"
                   v-model="getVaccineManager.idPatient"
                   clearable
+                  :disabled="getDisabledVaccineManager"
                   outlined
                 ></v-select>
                 <v-select
@@ -49,6 +50,7 @@
                   :items="vaccineSelect"
                   v-model="getVaccineManager.idVaccine"
                   clearable
+                  :disabled="getDisabledVaccineManager"
                   outlined
                 ></v-select>
                 <v-text-field
@@ -57,6 +59,7 @@
                   id="nurse"
                   v-model="getVaccineManager.nurseProfessional.name"
                   outlined
+                  :disabled="getDisabledVaccineManager"
                 ></v-text-field>
                 <v-text-field
                   label="CPF do profissional de enfermagem"
@@ -64,16 +67,14 @@
                   v-model="getVaccineManager.nurseProfessional.cpf"
                   id="cpf"
                   outlined
+                  :disabled="getDisabledVaccineManager"
                 ></v-text-field>
               </v-card-text>
               <v-card-actions class="justify-end">
                 <v-btn @click="closeDialog()" text>Fechar</v-btn>
-                <v-btn
-                  color="primary"
-                  :loading="loadingBtn"
-                  type="submit"
-                  >{{ getActionVaccineManager }}</v-btn
-                >
+                <v-btn color="primary" :loading="loadingBtn" type="submit">{{
+                  getActionVaccineManager
+                }}</v-btn>
               </v-card-actions>
             </v-card>
           </v-form>
@@ -105,7 +106,10 @@ import {
   getPatient,
 } from "@/services/PatientServices";
 import { getVaccine } from "@/services/VaccineServices";
-import { createVaccineManager, editVaccineManager } from "@/services/VaccineManagerServices";
+import {
+  createVaccineManager,
+  editVaccineManager,
+} from "@/services/VaccineManagerServices";
 import { mapActions, mapGetters } from "vuex";
 
 export default {
@@ -133,13 +137,13 @@ export default {
     this.getPatientRequest();
     this.vaccineSelect = await getVaccine();
     this.changeVaccineManager(this.vaccineManager);
-    console.log(this.getVaccineManager);
   },
   computed: {
     ...mapGetters([
       "getVaccineManager",
       "getVaccineManagerDialog",
       "getActionVaccineManager",
+      "getDisabledVaccineManager",
     ]),
   },
   methods: {
@@ -148,6 +152,7 @@ export default {
       "changeVaccineManagerDialog",
       "changeVaccineManagerDialogDelete",
       "changeActionVaccineManager",
+      "changeDisabledVaccineManager",
     ]),
     async crud() {
       if (this.$refs.send.validate()) {
@@ -155,7 +160,7 @@ export default {
           case "Cadastrar":
             this.createRequest(this.getVaccineManager);
             break;
-          case "Editar":
+          case "Adicionar":
             this.editRequest(this.getVaccineManager);
             break;
           case "Excluir":
@@ -166,13 +171,19 @@ export default {
     },
     async createRequest() {
       this.setLoading();
-      await createVaccineManager(this.getVaccineManager);
+      const { status } = await createVaccineManager(this.getVaccineManager);
+      if (status == "error") {
+        return this.setLoading();
+      }
       this.setLoading();
       this.refresh();
     },
     async editRequest() {
       this.setLoading();
-      await editVaccineManager(this.getVaccineManager);
+      const { status } = await editVaccineManager(this.getVaccineManager);
+      if (status == "error") {
+        return this.setLoading();
+      }
       this.setLoading();
       this.refresh();
     },
@@ -193,9 +204,11 @@ export default {
     createDialog() {
       this.changeActionVaccineManager("Cadastrar");
       this.changeVaccineManagerDialog(true);
+      this.changeDisabledVaccineManager(false);
     },
     closeDialog() {
       this.changeVaccineManagerDialog(false);
+      this.$refs.send.resetValidation();
     },
     // !SECTION
 

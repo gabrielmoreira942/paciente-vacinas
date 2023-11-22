@@ -1,13 +1,13 @@
 import Vue from 'vue';
 const vue = new Vue();
 import Swal from 'sweetalert2';
-
+import { errorMessage } from './errors.js'
 export async function getVaccineManager() {
     try {
         const { data } = await vue.$api.manager.get('vaccine-manager');
         return data;
     } catch (error) {
-        throw error;
+        return errorMessage(error);
     }
 }
 
@@ -23,13 +23,13 @@ export async function createVaccineManager(data) {
         });
         return result;
     } catch (error) {
-        throw error;
+        return errorMessage(error)
     }
 }
 
 export async function editVaccineManager(data) {
     try {
-        const result = await vue.$api.patient.put(`vaccine-manager/${data.id}`, data);
+        const result = await vue.$api.manager.put(`vaccine-manager/${data.id}`, data);
         Swal.fire({
             icon: "success",
             title: "Vacinação Editada!",
@@ -39,6 +39,6 @@ export async function editVaccineManager(data) {
         });
         return result;
     } catch (error) {
-        getErrors(error)
+        return errorMessage(error)
     }
 }

@@ -173,7 +173,7 @@ import {
   deletePatient,
 } from "@/services/PatientServices";
 import { mapActions, mapGetters } from "vuex";
-import axios from "axios"
+import axios from "axios";
 export default {
   props: {},
   data() {
@@ -208,13 +208,18 @@ export default {
     this.changePatient(this.patient);
   },
   computed: {
-    ...mapGetters(["getPatient", "getDialogPatient", "getDialogDeletePatient", "getAction"]),
+    ...mapGetters([
+      "getPatient",
+      "getDialogPatient",
+      "getDialogDeletePatient",
+      "getAction",
+    ]),
   },
   methods: {
-    viacep(e){
+    viacep(e) {
       axios.get(`https://viacep.com.br/ws/${e}/json`).then((response) => {
         console.log(response);
-      })
+      });
       //
     },
     ...mapActions([
@@ -238,19 +243,28 @@ export default {
     },
     async createRequest() {
       this.setLoading();
-      await createPatient(this.getPatient);
+      const { status } = await createPatient(this.getPatient);
+      if (status == "error") {
+        return this.setLoading();
+      }
       this.setLoading();
       this.refresh();
     },
     async editRequest() {
       this.setLoading();
-      await editPatient(this.getPatient);
+      const { status } = await editPatient(this.getPatient);
+      if (status == "error") {
+        return this.setLoading();
+      }
       this.setLoading();
       this.refresh();
     },
     async deleteRequest() {
       this.setLoading();
-      await deletePatient(this.getPatient);
+      const { status } = await deletePatient(this.getPatient);
+      if (status == "error") {
+        return this.setLoading();
+      }
       this.setLoading();
       this.refresh();
     },
@@ -322,11 +336,11 @@ export default {
   watch: {
     "getPatient.address.zipCode": {
       handler(e) {
-        if(e.length == 8) {
-          this.viacep(e)
+        if (e.length == 8) {
+          this.viacep(e);
         }
       },
-    },  
+    },
     getDialogPatient(e) {
       if (e == false) {
         clearObject(this.getPatient);
