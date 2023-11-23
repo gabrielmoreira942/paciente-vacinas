@@ -226,10 +226,9 @@ export default {
       this.loadingBtn = !this.loadingBtn;
     },
     refresh() {
-      this.step = 0;
       this.changeVaccineManagerDialog(false);
       this.changeVaccineManagerDialogDelete(false);
-      this.$eventBus.$emit("refresh-patient", true);
+      this.$eventBus.$emit("refresh-vaccine-manager", true);
       clearObject(this.getVaccineManager);
     },
     // !SECTION
