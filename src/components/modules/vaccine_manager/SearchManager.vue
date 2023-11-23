@@ -170,6 +170,7 @@ export default {
       if (this.$refs.filterVaccine.validate()) {
         let result = await filterVaccineManager(this.searchVaccine);
         console.log(result);
+        this.refreshSearchManager(result)
       }
     },
     async filterPatient() {
@@ -239,12 +240,10 @@ export default {
     setLoading() {
       this.loadingBtn = !this.loadingBtn;
     },
-    refresh() {
-      this.step = 0;
-      this.changeVaccineManagerDialog(false);
-      this.changeVaccineManagerDialogDelete(false);
-      this.$eventBus.$emit("refresh-patient", true);
-      clearObject(this.getVaccineManager);
+    refreshSearchManager(value) {
+      this.$eventBus.$emit("refresh-search-manager", value);
+      // clearObject(this.searchPatient);
+      // clearObject(this.searchVaccine);
     },
     // !SECTION
   },

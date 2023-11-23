@@ -100,11 +100,12 @@ export default {
     };
   },
   beforeDestroy() {
-    this.$eventBus.$off("refresh-patient");
+    this.$eventBus.$off("refresh-vaccine-manager");
+    this.$eventBus.$off("refresh-search-manager");
   },
   async created() {
-    this.requestPatient();
-    this.refreshPatient();
+    this.requestVaccineManager();
+    this.refreshVaccineManager();
   },
   computed: {
     ...mapGetters(["getVaccineManager", "getVaccineManagerDialog"]),
@@ -116,7 +117,7 @@ export default {
       "changeActionVaccineManager",
       "changeDisabledVaccineManager",
     ]),
-    async requestPatient() {
+    async requestVaccineManager() {
       this.items = this.dateBr(await getVaccineManager());
     },
     async view(event) {
@@ -140,11 +141,19 @@ export default {
       this.changeActionVaccineManager("Excluir");
       this.changePatient(item);
     },
-    refreshPatient() {
-      this.$eventBus.$on("refresh-patient", async () => {
+    refreshVaccineManager() {
+      this.$eventBus.$on("refresh-vaccine-manager", async () => {
         this.items = [];
         this.loadingGrid = true;
-        this.requestPatient();
+        this.requestVaccineManager();
+        this.loadingGrid = false;
+      });
+    },
+    refreshSearchManager() {
+      this.$eventBus.$on("refresh-search-manager", async (value) => {
+        this.items = value;
+        this.loadingGrid = true;
+        this.requestVaccineManager();
         this.loadingGrid = false;
       });
     },
