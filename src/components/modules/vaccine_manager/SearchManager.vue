@@ -168,14 +168,25 @@ export default {
     ]),
     async filterVaccine() {
       if (this.$refs.filterVaccine.validate()) {
+        this.setLoading();
         let result = await filterVaccineManager(this.searchVaccine);
         console.log(result);
+        if (result.status == "error") {
+          return this.setLoading();
+        }
+        this.setLoading();
+        this.refresh();
       }
     },
     async filterPatient() {
       if (this.$refs.filterPatient.validate()) {
+        this.setLoading();
         let result = await filterPatientManager(this.searchPatient.id);
-        console.log(result);
+        if (result.status == "error") {
+          return this.setLoading();
+        }
+        this.setLoading();
+        this.refresh();
       }
     },
     async createRequest() {
