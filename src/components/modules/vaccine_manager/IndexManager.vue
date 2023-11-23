@@ -71,14 +71,6 @@ export default {
       dialogDelete: false,
       headers: [
         {
-          text: "Fabricante da Vacina",
-          value: "vaccine.manufacturer",
-        },
-        {
-          text: "Lote",
-          value: "vaccine.batch",
-        },
-        {
           text: "Paciente",
           align: "start",
           value: "patient.firstName",
@@ -87,12 +79,19 @@ export default {
           text: "Sobrenome",
           value: "patient.lastName",
         },
+        {
+          text: "Fabricante da Vacina",
+          value: "vaccine.manufacturer",
+        },
+        {
+          text: "Lote",
+          value: "vaccine.batch",
+        },
         { text: "Qtd doses", value: "vaccine.amountOfDose" },
         {
           text: "Intervalo entre doses",
           value: "vaccine.intervalBetweenDoses",
         },
-        { text: "Data da vacina", value: "vaccineDate" },
         { text: "Identificador", value: "id" },
         { text: "Ações", value: "actions" },
       ],
@@ -129,11 +128,21 @@ export default {
     },
     edit(item) {
       let items = { ...item };
-      items.vaccineDate = dataEUA(items.vaccineDate);
+      // items.vaccineDate = dataEUA(items.vaccineDate);
       items.idPatient = items.patient.id;
       items.idVaccine = items.vaccine.id;
+      let obj = {
+        lastDateOfVaccine: "",
+        id: items.id,
+        idPatient: items.idPatient,
+        idVaccine: items.idVaccine,
+        nurseProfessional: {
+          name: "",
+          cpf: "",
+        },
+      };
       this.changeActionVaccineManager("Adicionar");
-      this.changeVaccineManager(items);
+      this.changeVaccineManager(obj);
       this.changeVaccineManagerDialog(true);
       this.changeDisabledVaccineManager(true);
     },

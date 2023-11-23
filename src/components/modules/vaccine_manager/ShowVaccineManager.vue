@@ -150,7 +150,7 @@
         <v-row>
           <v-col cols="4">
             <v-text-field
-              v-model="getVaccineManager.vaccineDate"
+              v-model="getVaccineManager.vaccine.validateDate"
               label="Data de vacinação"
               outlined
               disabled
@@ -188,7 +188,7 @@
               disabled
             ></v-text-field>
           </v-col>
-          <v-col cols="6">
+          <!-- <v-col cols="6">
             <v-text-field
               v-model="getVaccineManager.nurseProfessional.name"
               label="Nome do profissional de enfermagem"
@@ -204,11 +204,11 @@
               outlined
               disabled
             ></v-text-field>
-          </v-col>
+          </v-col> -->
           <v-data-table
             :headers="headers"
             :items-per-page="10"
-            :items="listOfDoses"
+            :items="items"
             class="elevation-1"
           ></v-data-table>
         </v-row>
@@ -226,23 +226,39 @@ export default {
 
   data() {
     return {
-      headers: [{ text: "Lista de doses", value: "list" }],
-      listOfDoses: [],
+      headers: [
+        { text: "Lista de doses", value: "list" },
+        {
+          text: "Profissional de enfermagem",
+          value: "name",
+        },
+        {
+          text: "CPF",
+          value: "cpf",
+        },
+      ],
+      items: [],
     };
   },
   created() {
     this.getVaccineManager = JSON.parse(
       localStorage.getItem("storageVaccineManager")
     );
-    this.getVaccineManager.vaccineDate = dataBr(
-      this.getVaccineManager.vaccineDate
+    this.getVaccineManager.vaccine.validateDate = dataBr(
+      this.getVaccineManager.vaccine.validateDate
     );
     this.dealings();
   },
   methods: {
     dealings() {
       this.getVaccineManager.listOfDoses.map((item, i) => {
-        this.listOfDoses.push({ list: dataBr(item) });
+        this.items.push({
+          list: dataBr(item),
+        });
+      });
+      this.getVaccineManager.nurseProfessionals.map((item, i) => {
+        this.items[i].name = item.name 
+        this.items[i].cpf = item.cpf 
       });
     },
   },

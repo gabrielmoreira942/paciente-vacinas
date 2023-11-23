@@ -24,7 +24,7 @@
                   class="mt-3"
                   label="Data da vacinação"
                   outlined
-                  v-model="getVaccineManager.vaccineDate"
+                  v-model="getVaccineManager.lastDateOfVaccine"
                   type="date"
                   :rules="rules"
                   :max="currentDate()"
@@ -59,15 +59,14 @@
                   id="nurse"
                   v-model="getVaccineManager.nurseProfessional.name"
                   outlined
-                  :disabled="getDisabledVaccineManager"
                 ></v-text-field>
                 <v-text-field
                   label="CPF do profissional de enfermagem"
                   :rules="rules"
                   v-model="getVaccineManager.nurseProfessional.cpf"
                   id="cpf"
+                  v-mask="'###.###.###-##'"
                   outlined
-                  :disabled="getDisabledVaccineManager"
                 ></v-text-field>
               </v-card-text>
               <v-card-actions class="justify-end">
@@ -125,7 +124,7 @@ export default {
       vaccineManager: {
         idPatient: "",
         idVaccine: "",
-        vaccineDate: "",
+        lastDateOfVaccine: "",
         nurseProfessional: {
           name: "",
           cpf: "",

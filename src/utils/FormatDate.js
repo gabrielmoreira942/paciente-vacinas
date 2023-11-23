@@ -31,12 +31,12 @@ const dataBrSemMascara = (date) => {
 }
 // americano para br
 const dataBr = (date) => {
-  let data = new Date(date);
-  let dia = data.getDate().toString();
-  let diaF = dia.length == 1 ? "0" + dia : dia;
-  let mes = (data.getMonth() + 1).toString(); //+1 pois no getMonth Janeiro começa com zero.
-  let mesF = mes.length == 1 ? "0" + mes : mes;
+  const [ano, mes, dia] = date.split('-');
+  let data = new Date(ano, mes - 1, dia);
+  let diaF = data.getDate().toString().padStart(2, '0');
+  let mesF = (data.getMonth() + 1).toString().padStart(2, '0');
   let anoF = data.getFullYear();
+
   return diaF + '/' + mesF + '/' + anoF;
 }
 const dataEUA = (date) => {
