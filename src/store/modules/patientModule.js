@@ -12,16 +12,15 @@ export default ({
         getAction: state => state.action,
     },
     mutations: {
-        setPatient: (state, data) => (
-            state.patient = data,
-            localStorage.setItem('storagePatient', JSON.stringify(data)
-            )),
+        setPatient: (state, data) => state.patient = data,
+        setPatientView: (state, data) => localStorage.setItem('patientView', JSON.stringify(data)),
         setDialogPatient: (state, data) => state.dialog = data,
         setDialogDeletePatient: (state, data) => state.dialogDelete = data,
         setAction: (state, data) => state.action = data,
     },
     actions: {
         changePatient: ({ commit }, data) => commit("setPatient", data),
+        changePatientView: ({ commit }, data) => commit("setPatientView", data),
         changeDialogPatient: ({ commit }, data) => commit("setDialogPatient", data),
         changeDialogDeletePatient: ({ commit }, data) => commit("setDialogDeletePatient", data),
         changeAction: ({ commit }, data) => commit("setAction", data),

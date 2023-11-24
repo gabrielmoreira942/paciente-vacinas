@@ -45,6 +45,7 @@
                 <v-text-field
                   v-model="getPatient.cpf"
                   label="CPF"
+                  v-mask="'###.###.###-##'"
                   id="cpf"
                   outlined
                 ></v-text-field>

@@ -235,6 +235,7 @@ export default {
 
   data() {
     return {
+      getVaccineManager: {},
       headers: [
         { text: "Lista de doses", value: "list" },
         {
@@ -279,14 +280,14 @@ export default {
     },
     getItems() {
       this.getVaccineManager = JSON.parse(
-        localStorage.getItem("storageVaccineManager")
+        localStorage.getItem("vaccineManagerView")
       );
       this.getVaccineManager.vaccine.validateDate = dataBr(
         this.getVaccineManager.vaccine.validateDate
       );
     },
     returnItems() {
-      this.items = []
+      this.items = [];
       this.getVaccineManager = this.getVManager[0];
       this.getVaccineManager.vaccine.validateDate = dataBr(
         this.getVaccineManager.vaccine.validateDate

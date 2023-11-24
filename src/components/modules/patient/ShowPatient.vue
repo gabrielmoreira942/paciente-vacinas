@@ -160,7 +160,7 @@ export default {
     };
   },
   created() {
-    this.getPatient = JSON.parse(localStorage.getItem("storagePatient"));
+    this.getPatient = JSON.parse(localStorage.getItem("patientView"));
   },
   computed: {},
 };

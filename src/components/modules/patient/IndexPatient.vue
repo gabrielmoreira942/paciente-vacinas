@@ -91,6 +91,7 @@ export default {
   methods: {
     ...mapActions([
       "changePatient",
+      "changePatientView",
       "changeDialogPatient",
       "changeDialogDeletePatient",
       "changeAction",
@@ -99,7 +100,7 @@ export default {
       this.items = this.dateBr(await getPatient());
     },
     async view(event) {
-      this.changePatient(event);
+      this.changePatientView(event);
       this.$router.push({
         name: "Visualizar Pacientes",
         params: { name: "view" },

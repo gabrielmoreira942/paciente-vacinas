@@ -102,6 +102,7 @@ export default {
   methods: {
     ...mapActions([
       "changeVaccineManager",
+      "changeVaccineManagerView",
       "changeVaccineManagerDialog",
       "changeActionVaccineManager",
       "changeDisabledVaccineManager",
@@ -111,7 +112,7 @@ export default {
       this.getPatientFormat();
     },
     async view(event) {
-      this.changeVaccineManager(event);
+      this.changeVaccineManagerView(event);
       this.$router.push({
         name: "Visualizar Paciente Vacinado",
         params: { name: "view" },
@@ -148,7 +149,7 @@ export default {
       this.$eventBus.$on("refresh-search-manager", async (value) => {
         this.items = [];
         this.items = value;
-        this.getPatientFormat()
+        this.getPatientFormat();
         this.loadingGrid = true;
         this.loadingGrid = false;
       });
