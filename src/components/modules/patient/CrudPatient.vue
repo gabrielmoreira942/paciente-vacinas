@@ -20,7 +20,7 @@
             </v-toolbar>
             <v-card-text>
               <!-- ANCHOR - DADOS PESSOAIS -->
-              <div v-if="step == 0">
+              <div v-show="step == 0">
                 <v-text-field
                   v-model="getPatient.firstName"
                   class="mt-3"
@@ -58,10 +58,11 @@
                   :max="currentDate"
                 ></v-text-field>
               </div>
-              <div v-else-if="step == 1">
+              <div v-show="step == 1">
                 <!-- ANCHOR - CONTATOS -->
                 <v-text-field
                   v-model="getPatient.contact.telephone"
+                  v-mask="'(##) ####-####'"
                   class="mt-3"
                   id="telefone"
                   label="Telefone"
@@ -69,6 +70,7 @@
                 ></v-text-field>
                 <v-text-field
                   v-model="getPatient.contact.whatsapp"
+                  v-mask="'(##) # ####-####'"
                   label="Whatsapp"
                   id="whatsapp"
                   outlined
@@ -81,42 +83,47 @@
                 ></v-text-field>
               </div>
               <!-- ANCHOR - ENDEREÇO -->
-              <div v-else-if="step == 2">
+              <div v-show="step == 2">
                 <v-text-field
                   class="mt-3"
                   id="numero"
                   label="Número"
+                  v-mask="'##########'"
                   outlined
                   v-model="getPatient.address.number"
                 ></v-text-field>
                 <v-text-field
+                  v-model="getPatient.address.zipCode"
+                  v-mask="'#####-###'"
+                  label="CEP"
+                  id="cep"
+                  outlined
+                ></v-text-field>
+                <v-text-field
                   v-model="getPatient.address.neighborhood"
                   label="Bairro"
+                  :disabled="disabledBtn"
                   id="bairro"
                   outlined
                 ></v-text-field>
                 <v-text-field
                   v-model="getPatient.address.county"
                   label="Cidade"
+                  :disabled="disabledBtn"
                   id="cidade"
-                  outlined
-                ></v-text-field>
-                <v-text-field
-                  v-model="getPatient.address.zipCode"
-                  label="CEP"
-                  id="cep"
-                  maxlength="8"
                   outlined
                 ></v-text-field>
                 <v-text-field
                   v-model="getPatient.address.state"
                   label="Estado"
+                  :disabled="disabledBtn"
                   id="estado"
                   outlined
                 ></v-text-field>
                 <v-text-field
                   v-model="getPatient.address.street"
                   label="Rua"
+                  :disabled="disabledBtn"
                   id="rua"
                   outlined
                 ></v-text-field>
@@ -137,12 +144,14 @@
                 color="primary"
                 @click="crud()"
                 :loading="loadingBtn"
+                :disabled="disabledBtn"
                 >{{ btnNext }}</v-btn
               >
               <v-btn
                 v-if="btnNext == 'Editar'"
                 color="primary"
                 :loading="loadingBtn"
+                :disabled="disabledBtn"
                 @click="crud()"
                 >{{ btnNext }}</v-btn
               >
@@ -182,9 +191,8 @@ export default {
   data() {
     return {
       loadingBtn: false,
+      disabledBtn: true,
       step: 0,
-      btnNext: "Próximo",
-      btnBack: "Fechar",
       patient: {
         firstName: "",
         lastName: "",
@@ -205,6 +213,8 @@ export default {
           street: "",
         },
       },
+      btnNext: "Próximo",
+      btnBack: "Fechar",
     };
   },
   created() {
@@ -219,12 +229,16 @@ export default {
     ]),
   },
   methods: {
-    // viacep(e) {
-    //   axios.get(`https://viacep.com.br/ws/${e}/json`).then((response) => {
-    //     console.log(response);
-    //   });
-    //   //
-    // },
+    viacep(e) {
+      axios.get(`https://viacep.com.br/ws/${e}/json`).then(({ data }) => {
+        if (data.erro) {
+          console.log("object");
+          return this.getCep(false);
+        }
+        this.getCep(data);
+      });
+      //
+    },
     ...mapActions([
       "changePatient",
       "changeDialogPatient",
@@ -245,6 +259,7 @@ export default {
       }
     },
     async createRequest() {
+      console.log(this.getPatient);
       this.setLoading();
       const { status } = await createPatient(this.getPatient);
       if (status == "error") {
@@ -334,15 +349,31 @@ export default {
       this.$eventBus.$emit("refresh-patient", true);
       clearObject(this.getPatient);
     },
+    getCep(data) {
+      if (data) {
+        this.getPatient.address.street = data.logradouro;
+        this.getPatient.address.neighborhood = data.bairro;
+        this.getPatient.address.county = data.localidade;
+        this.getPatient.address.state = data.uf;
+        this.disabledBtn = false;
+      } else if (data == false) {
+        this.getPatient.address.street = "";
+        this.getPatient.address.neighborhood = "";
+        this.getPatient.address.county = "";
+        this.getPatient.address.state = "";
+        this.disabledBtn = true;
+      }
+    },
     // !SECTION
   },
   watch: {
     "getPatient.address.zipCode": {
       handler(e) {
-        // if (e.length == 8) {
-        //   this.viacep(e);
-        // }
-        console.log(e);
+        if (e.length == 9) {
+          this.viacep(e);
+        } else {
+          this.getCep(false);
+        }
       },
     },
     getDialogPatient(e) {
