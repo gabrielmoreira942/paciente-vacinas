@@ -117,7 +117,7 @@ export default {
       "changeDisabledVaccineManager",
     ]),
     async requestVaccineManager() {
-      this.items = this.dateBr(await getVaccineManager());
+      this.items = await getVaccineManager();
     },
     async view(event) {
       this.changeVaccineManager(event);
@@ -128,7 +128,6 @@ export default {
     },
     edit(item) {
       let items = { ...item };
-      // items.vaccineDate = dataEUA(items.vaccineDate);
       items.idPatient = items.patient.id;
       items.idVaccine = items.vaccine.id;
       let obj = {
@@ -165,21 +164,6 @@ export default {
         this.requestVaccineManager();
         this.loadingGrid = false;
       });
-    },
-    dealings(items) {
-      let result = [];
-      items.listOfDoses.map((item, i) => {
-        result.push(dataBr(item));
-      });
-      return result;
-    },
-    // ANCHOR - Formatação data BR in array
-    dateBr(data) {
-      let result = data;
-      data.map((item, i) => {
-        result[i].vaccineDate = dataBr(item.vaccineDate);
-      });
-      return result;
     },
   },
 };
