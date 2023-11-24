@@ -173,7 +173,7 @@ export default {
     },
     async deleteRequest() {
       this.setLoading();
-      await deleteVaccine(this.getgetVaccine.id);
+      await deleteVaccine(this.getVaccine.id);
       this.setLoading();
       this.refresh();
     },
