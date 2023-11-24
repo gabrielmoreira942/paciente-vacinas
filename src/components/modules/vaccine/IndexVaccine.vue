@@ -9,7 +9,30 @@
           :items-per-page="10"
           class="elevation-1"
           :loading="loadingGrid"
-        ></v-data-table>
+        >
+          <template v-slot:[`item.actions`]="{ item }">
+            <v-tooltip bottom color="primary">
+              <template v-slot:activator="{ on, attrs }">
+                <span v-bind="attrs" v-on="on">
+                  <v-icon color="primary" @click="edit(item)"
+                    >mdi-pencil-outline</v-icon
+                  >
+                </span>
+              </template>
+              <span>Editar</span>
+            </v-tooltip>
+            <v-tooltip bottom color="red">
+              <template v-slot:activator="{ on, attrs }">
+                <span v-bind="attrs" v-on="on">
+                  <v-icon color="red" @click="deleteItem(item)"
+                    >mdi-delete</v-icon
+                  >
+                </span>
+              </template>
+              <span>Excluir</span>
+            </v-tooltip>
+          </template>
+        </v-data-table>
       </v-col>
     </v-row>
   </v-container>
@@ -19,6 +42,7 @@
 import { dataBr } from "@/utils/FormatDate";
 import CrudVaccine from "@/components/modules/vaccine/CrudVaccine.vue";
 import { getVaccine } from "@/services/VaccineServices";
+import { mapActions } from "vuex";
 export default {
   name: "HelloWorld",
   components: {
@@ -41,6 +65,7 @@ export default {
         { text: "Quantidade de doses", value: "amountOfDose" },
         { text: "Intervalo entre doses", value: "intervalBetweenDoses" },
         { text: "Identificador", value: "id" },
+        { text: "Ações", value: "actions" },
       ],
       items: [],
     };
@@ -53,8 +78,14 @@ export default {
     this.requestVaccine();
   },
   methods: {
+    ...mapActions(["changeDialogDeleteVaccine", "changeActionVaccine", "changeVaccine"]),
     async requestVaccine() {
       this.items = this.dateBr(await getVaccine());
+    },
+    edit(item) {},
+    deleteItem(item) {
+      this.changeVaccine(item)
+      this.changeDialogDeleteVaccine(true);
     },
     dateBr(data) {
       let result = data;

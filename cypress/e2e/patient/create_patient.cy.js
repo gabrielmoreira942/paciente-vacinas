@@ -36,7 +36,7 @@ describe('Teste do campo de formulário de paciente', () => {
                 number: '123',
                 neighborhood: 'Centro',
                 county: 'Lauro de Freitas',
-                zipCode: '12345-678',
+                zipCode: '42711-820',
                 state: 'BA',
                 street: 'Rua Exemplo 123'
             }
@@ -55,11 +55,12 @@ describe('Teste do campo de formulário de paciente', () => {
         cy.get('#proximo').click();
 
         cy.get('#numero').type(obj.address.number);
-        cy.get('#bairro').type(obj.address.neighborhood);
-        cy.get('#cidade').type(obj.address.county);
+        // cy.get('#bairro').type(obj.address.neighborhood);
+        // cy.get('#cidade').type(obj.address.county);
         cy.get('#cep').type(obj.address.zipCode);
-        cy.get('#estado').type(obj.address.state);
-        cy.get('#rua').type(obj.address.street);
+        cy.wait(1500)
+        // cy.get('#estado').type(obj.address.state);
+        // cy.get('#rua').type(obj.address.street);
 
         // Retorna os dados do formulário
         return obj;

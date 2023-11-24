@@ -9,7 +9,6 @@
       <v-toolbar-title class="white--text">{{ $route.name }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn text class="white--text" to="/">Home</v-btn>
-      <v-btn text class="white--text" to="/about">Sobre</v-btn>
     </v-app-bar>
   </div>
 </template>
@@ -24,7 +23,7 @@ export default {
   },
   data() {
     return {
-      drawer: false,
+      drawer: true,
     };
   },
   mounted() {

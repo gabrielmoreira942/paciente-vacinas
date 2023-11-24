@@ -76,6 +76,27 @@
             </v-card>
           </v-form>
         </v-dialog>
+        <v-dialog v-model="getDialogDeleteVaccine" max-width="500px">
+          <v-card>
+            <v-card-title>Confirmação de Exclusão</v-card-title>
+            <v-card-text>
+              Tem certeza de que deseja excluir este item?
+            </v-card-text>
+            <v-card-actions class="justify-end">
+              <v-btn
+                :loading="loadingBtn"
+                @click="changeDialogDeleteVaccine(false)"
+                >Cancelar</v-btn
+              >
+              <v-btn
+                color="error"
+                :loading="loadingBtn"
+                @click="deleteRequest()"
+                >Confirmar</v-btn
+              >
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-col>
     </v-row>
   </div>
@@ -83,7 +104,8 @@
 
 <script>
 import { clearObject } from "@/utils/ClearValues";
-import { createVaccine } from "@/services/VaccineServices";
+import { createVaccine, deleteVaccine } from "@/services/VaccineServices";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   data() {
@@ -102,7 +124,9 @@ export default {
       },
     };
   },
+  created() {},
   methods: {
+    ...mapActions(["changeDialogDeleteVaccine"]),
     async crud() {
       if (this.$refs.send.validate()) {
         switch (this.btnAction) {
@@ -110,12 +134,6 @@ export default {
             this.createRequest();
             break;
           case "Editar":
-            this.setLoading();
-            await createVaccine(this.vaccine);
-            this.setLoading();
-            this.refresh();
-            break;
-          case "Excluir":
             this.setLoading();
             await createVaccine(this.vaccine);
             this.setLoading();
@@ -129,15 +147,25 @@ export default {
       await createVaccine(this.vaccine);
       this.setLoading();
       this.refresh();
+      this.$refs.send.reset();
+    },
+    async deleteRequest() {
+      this.setLoading();
+      await deleteVaccine(this.getVaccine.id);
+      this.setLoading();
+      this.refresh();
     },
     setLoading() {
       this.loadingBtn = !this.loadingBtn;
     },
     refresh() {
-      this.$refs.send.reset();
       this.dialog = false;
+      this.changeDialogDeleteVaccine(false);
       this.$eventBus.$emit("refresh-vaccine", true);
     },
+  },
+  computed: {
+    ...mapGetters(["getDialogDeleteVaccine", "getVaccine", "getActionVaccine"]),
   },
 };
 </script>

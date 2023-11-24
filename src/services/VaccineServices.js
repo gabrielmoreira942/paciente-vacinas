@@ -25,6 +25,21 @@ export async function createVaccine(data) {
         throw error;
     }
 }
+export async function deleteVaccine(id) {
+    try {
+        const result = await vue.$api.vaccine.delete(`vaccine/${id}`);
+        Swal.fire({
+            icon: "success",
+            title: "Vacina Excluída!",
+            html: `<p><span>Vacina excluída com sucesso!</span></p>`,
+            showConfirmButton: false,
+            timer: 2000,
+        });
+        return result;
+    } catch (error) {
+        return errorMessage(error)
+    }
+}
 
 export async function mockVaccine() {
     try {

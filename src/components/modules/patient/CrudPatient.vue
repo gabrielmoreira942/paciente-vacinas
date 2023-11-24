@@ -106,8 +106,8 @@
                 <v-text-field
                   v-model="getPatient.address.neighborhood"
                   label="Bairro"
-                  :disabled="disabledBtn"
                   id="bairro"
+                  :disabled="disabledBtn"
                   outlined
                 ></v-text-field>
                 <v-text-field
