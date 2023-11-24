@@ -1,6 +1,7 @@
 import Vue from 'vue';
 const vue = new Vue();
 import Swal from 'sweetalert2';
+import { errorMessage } from './errors';
 
 export async function getVaccine() {
     try {
@@ -22,9 +23,25 @@ export async function createVaccine(data) {
         });
         return result;
     } catch (error) {
-        throw error;
+        return errorMessage(error)
     }
 }
+export async function editVaccine(data) {
+    try {
+        const result = await vue.$api.vaccine.put(`vaccine/${data.id}`, data);
+        Swal.fire({
+            icon: "success",
+            title: "Vacina Editada!",
+            html: `<p><span>Vacina editada com sucesso!</span></p>`,
+            showConfirmButton: false,
+            timer: 2000,
+        });
+        return result;
+    } catch (error) {
+        return errorMessage(error)
+    }
+}
+
 export async function deleteVaccine(id) {
     try {
         const result = await vue.$api.vaccine.delete(`vaccine/${id}`);

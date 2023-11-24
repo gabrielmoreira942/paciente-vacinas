@@ -2,10 +2,10 @@
   <div>
     <v-row>
       <v-col class="d-flex justify-end">
-        <v-dialog max-width="600" v-model="dialog" persistent>
+        <v-dialog max-width="600" v-model="getDialogVaccine" persistent>
           <template v-slot:activator="{ on, attrs }">
             <v-btn
-              @click="(btnAction = 'Cadastrar'), (dialog = true)"
+              @click="actionCreate()"
               color="primary"
               v-bind="attrs"
               v-on="on"
@@ -15,62 +15,64 @@
           <v-form ref="send" @submit.prevent="crud()">
             <v-card>
               <v-toolbar color="primary" dark>
-                {{ btnAction }} Vacina
+                {{ getActionVaccine }} Vacina
               </v-toolbar>
               <v-card-text>
                 <div>
                   <v-text-field
                     :rules="rules"
-                    v-model="vaccine.manufacturer"
+                    v-model="getVaccine.manufacturer"
                     class="mt-3"
                     label="Fabricante"
                     outlined
                   ></v-text-field>
                   <v-text-field
                     :rules="rules"
-                    v-model="vaccine.batch"
+                    v-model="getVaccine.batch"
                     label="Lote"
                     outlined
                   ></v-text-field>
                   <v-text-field
                     :rules="rules"
-                    v-model="vaccine.validateDate"
+                    v-model="getVaccine.validateDate"
                     label="Validade"
                     outlined
                     type="date"
                   ></v-text-field>
                   <v-text-field
                     :rules="rules"
-                    v-model="vaccine.amountOfDose"
+                    v-model="getVaccine.amountOfDose"
                     label="Quantidade de doses"
                     outlined
                   ></v-text-field>
                   <v-text-field
                     :rules="rules"
-                    type="number"
-                    v-model="vaccine.intervalBetweenDoses"
+                    v-model="getVaccine.intervalBetweenDoses"
                     label="Intervalo entre doses"
                     outlined
                   ></v-text-field>
                 </div>
               </v-card-text>
               <v-card-actions class="justify-end">
-                <v-btn :loading="loadingBtn" text @click="dialog = false"
+                <v-btn
+                  :loading="loadingBtn"
+                  text
+                  @click="changeDialogVaccine(false)"
                   >Fechar</v-btn
                 >
                 <v-btn
                   type="submit"
-                  v-if="btnAction == 'Cadastrar'"
+                  v-if="getActionVaccine == 'Cadastrar'"
                   color="primary"
                   :loading="loadingBtn"
-                  >{{ btnAction }}</v-btn
+                  >{{ getActionVaccine }}</v-btn
                 >
                 <v-btn
                   type="submit"
-                  v-if="btnAction == 'Editar'"
+                  v-if="getActionVaccine == 'Editar'"
                   color="primary"
                   :loading="loadingBtn"
-                  >{{ btnAction }}</v-btn
+                  >{{ getActionVaccine }}</v-btn
                 >
               </v-card-actions>
             </v-card>
@@ -104,7 +106,11 @@
 
 <script>
 import { clearObject } from "@/utils/ClearValues";
-import { createVaccine, deleteVaccine } from "@/services/VaccineServices";
+import {
+  createVaccine,
+  deleteVaccine,
+  editVaccine,
+} from "@/services/VaccineServices";
 import { mapActions, mapGetters } from "vuex";
 
 export default {
@@ -112,7 +118,6 @@ export default {
     return {
       dialog: false,
       loadingBtn: false,
-      btnAction: "",
       rules: [(v) => !!v || "Campo obrigatório"],
       btnBack: "Fechar",
       vaccine: {
@@ -124,48 +129,77 @@ export default {
       },
     };
   },
-  created() {},
+  created() {
+    this.changeVaccine(this.vaccine);
+  },
   methods: {
-    ...mapActions(["changeDialogDeleteVaccine"]),
+    ...mapActions([
+      "changeDialogDeleteVaccine",
+      "changeVaccine",
+      "changeDialogVaccine",
+      "changeActionVaccine",
+    ]),
     async crud() {
       if (this.$refs.send.validate()) {
-        switch (this.btnAction) {
+        switch (this.getActionVaccine) {
           case "Cadastrar":
             this.createRequest();
             break;
           case "Editar":
-            this.setLoading();
-            await createVaccine(this.vaccine);
-            this.setLoading();
-            this.refresh();
+            this.editRequest();
             break;
         }
       }
     },
     async createRequest() {
       this.setLoading();
-      await createVaccine(this.vaccine);
+      const { status } = await createVaccine(this.getVaccine);
+      if (status == "error") {
+        return this.setLoading();
+      }
+      this.setLoading();
+      this.refresh();
+      this.$refs.send.reset();
+    },
+    async editRequest() {
+      this.setLoading();
+      const { status } = await editVaccine(this.getVaccine);
+      if (status == "error") {
+        return this.setLoading();
+      }
       this.setLoading();
       this.refresh();
       this.$refs.send.reset();
     },
     async deleteRequest() {
       this.setLoading();
-      await deleteVaccine(this.getVaccine.id);
+      await deleteVaccine(this.getgetVaccine.id);
       this.setLoading();
       this.refresh();
     },
     setLoading() {
       this.loadingBtn = !this.loadingBtn;
     },
+    actionCreate() {
+      this.changeActionVaccine("Cadastrar");
+      this.changeDialogVaccine(true);
+    },
+    closeDialog() {
+      this.changeDialogVaccine(false);
+    },
     refresh() {
-      this.dialog = false;
+      this.changeDialogVaccine(false);
       this.changeDialogDeleteVaccine(false);
       this.$eventBus.$emit("refresh-vaccine", true);
     },
   },
   computed: {
-    ...mapGetters(["getDialogDeleteVaccine", "getVaccine", "getActionVaccine"]),
+    ...mapGetters([
+      "getDialogDeleteVaccine",
+      "getVaccine",
+      "getActionVaccine",
+      "getDialogVaccine",
+    ]),
   },
 };
 </script>

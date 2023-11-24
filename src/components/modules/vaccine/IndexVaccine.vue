@@ -39,7 +39,7 @@
 </template>
   
   <script>
-import { dataBr } from "@/utils/FormatDate";
+import { dataBr, dataEUA } from "@/utils/FormatDate";
 import CrudVaccine from "@/components/modules/vaccine/CrudVaccine.vue";
 import { getVaccine } from "@/services/VaccineServices";
 import { mapActions } from "vuex";
@@ -78,13 +78,24 @@ export default {
     this.requestVaccine();
   },
   methods: {
-    ...mapActions(["changeDialogDeleteVaccine", "changeActionVaccine", "changeVaccine"]),
+    ...mapActions([
+      "changeDialogDeleteVaccine",
+      "changeActionVaccine",
+      "changeVaccine",
+      "changeDialogVaccine",
+    ]),
     async requestVaccine() {
       this.items = this.dateBr(await getVaccine());
     },
-    edit(item) {},
+    edit(item) {
+      let items = { ...item };
+      items.validateDate = dataEUA(item.validateDate);
+      this.changeVaccine(items);
+      this.changeActionVaccine("Editar")
+      this.changeDialogVaccine(true);
+    },
     deleteItem(item) {
-      this.changeVaccine(item)
+      this.changeVaccine(item);
       this.changeDialogDeleteVaccine(true);
     },
     dateBr(data) {
