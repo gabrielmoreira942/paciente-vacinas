@@ -1,5 +1,5 @@
 const route = Cypress.env('VUE_APP_PATIENT') + '/patient';
-
+import { gerarCPF } from "../../../src/utils/RandomCPF"
 describe('Teste do campo de formulário de paciente', () => {
     it('Deve preencher o campo e cadastrar via POST', () => {
         cy.visit('http://localhost:8083/patients');
@@ -41,11 +41,10 @@ describe('Teste do campo de formulário de paciente', () => {
                 street: 'Rua Exemplo 123'
             }
         };
-
         cy.get('#nome').type(obj.firstName);
         cy.get('#sobrenome').type(obj.lastName);
-        cy.get('#cpf').type(obj.cpf);
         cy.get('#genero').click().type(obj.gender, { force: true });
+        cy.get('#cpf').type(gerarCPF());
         cy.get('#data_nascimento').type(obj.birthDate);
         cy.get('#proximo').click();
 

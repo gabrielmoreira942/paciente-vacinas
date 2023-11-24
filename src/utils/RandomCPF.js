@@ -1,12 +1,28 @@
 export function gerarCPF() {
-    const n = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10));
-
-    let v = n.map((d, i) => d * (9 - (i % 10))).reduce((acc, curr) => acc + curr) % 11;
-    n.push(v > 9 ? 0 : v);
-
-    v = n.map((d, i) => d * (10 - (i % 10))).reduce((acc, curr) => acc + curr) % 11;
-    n.push(v > 9 ? 0 : v);
-
-    return n.join('').replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-}
-
+    const cpfArray = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10));
+  
+    let sum = 0;
+    let weight = 10;
+  
+    for (let i = 0; i < 9; i++) {
+      sum += cpfArray[i] * weight;
+      weight--;
+    }
+  
+    let verifyingDigit = 11 - (sum % 11);
+    cpfArray.push(verifyingDigit >= 10 ? 0 : verifyingDigit);
+  
+    sum = 0;
+    weight = 11;
+  
+    for (let i = 0; i < 10; i++) {
+      sum += cpfArray[i] * weight;
+      weight--;
+    }
+  
+    verifyingDigit = 11 - (sum % 11);
+    cpfArray.push(verifyingDigit >= 10 ? 0 : verifyingDigit);
+  
+    return cpfArray.join('');
+  }
+  
