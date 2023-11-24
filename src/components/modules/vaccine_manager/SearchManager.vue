@@ -1,23 +1,24 @@
 <template>
   <div>
+    <h3>Filtros <v-icon>mdi-filter</v-icon></h3>
     <v-row>
       <v-col class="d-flex">
         <!-- ANCHOR - FILTRAR POR VACINAÇÃO -->
         <v-dialog max-width="600" v-model="filterVaccineDialog" persistent>
           <template v-slot:activator="{ on, attrs }">
             <v-btn
-              @click="filterVaccineDialog()"
+              @click="filterVaccineDialog = true"
               color="primary"
               v-bind="attrs"
               v-on="on"
               id="filter_manager"
-              >Filtrar por vacinação</v-btn
+              >Fabricante</v-btn
             >
           </template>
           <v-form @submit.prevent="filterVaccine()" ref="filterVaccine">
             <v-card>
               <v-toolbar color="primary" dark>
-                Filtrar por vacinação
+                Filtrar por fabricante
               </v-toolbar>
               <v-card-text>
                 <!-- ANCHOR - FILTRAR VACINAS -->
@@ -36,12 +37,16 @@
                     ></v-select>
                   </v-col>
                   <v-col md="6">
-                    <v-text-field
+                    <v-select
                       label="Estado"
                       id="vacina"
+                      item-text="state"
+                      item-value="state"
+                      :items="stateSelect"
                       v-model="searchVaccine.state"
+                      clearable
                       outlined
-                    ></v-text-field>
+                    ></v-select>
                   </v-col>
                 </v-row>
               </v-card-text>
@@ -58,12 +63,12 @@
           <template v-slot:activator="{ on, attrs }">
             <v-btn
               class="ml-2"
-              @click="filterPatientDialog()"
+              @click="filterPatientDialog = true"
               color="primary"
               v-bind="attrs"
               v-on="on"
               id="filter_manager"
-              >Filtrar por paciente</v-btn
+              >Paciente</v-btn
             >
           </template>
           <v-form @submit.prevent="filterPatient()" ref="filterPatient">
@@ -96,6 +101,48 @@
             </v-card>
           </v-form>
         </v-dialog>
+        <v-dialog max-width="600" v-model="filterOverdueDialog" persistent>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              class="ml-2"
+              @click="filterOverdueDialog = true"
+              color="primary"
+              v-bind="attrs"
+              v-on="on"
+              id="filter_manager"
+              >Atrasadas</v-btn
+            >
+          </template>
+          <v-form @submit.prevent="filterOverdue()" ref="filterOverdue">
+            <v-card>
+              <v-toolbar color="primary" dark> Vacinas atrasadas </v-toolbar>
+              <v-card-text>
+                <!-- ANCHOR - FILTRAR POR ATRASADAS -->
+                <v-row>
+                  <v-col md="6">
+                    <v-select
+                      label="Estado"
+                      id="atrasadas"
+                      item-text="state"
+                      item-value="state"
+                      :rules="rules"
+                      :items="stateSelect"
+                      v-model="searchOverdue.state"
+                      clearable
+                      outlined
+                    ></v-select>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+              <v-card-actions class="justify-end">
+                <v-btn @click="closeFilterOverdue()" text>Fechar</v-btn>
+                <v-btn color="primary" :loading="loadingBtn" type="submit"
+                  >Filtrar</v-btn
+                >
+              </v-card-actions>
+            </v-card>
+          </v-form>
+        </v-dialog>
       </v-col>
     </v-row>
   </div>
@@ -103,11 +150,10 @@
 
 <script>
 import { clearObject } from "@/utils/ClearValues";
-import { deletePatient, getPatient } from "@/services/PatientServices";
+import { getPatient } from "@/services/PatientServices";
 import { getVaccine } from "@/services/VaccineServices";
+import { getStates, filterOverdueManager } from "@/services/VaccineManagerServices";
 import {
-  createVaccineManager,
-  editVaccineManager,
   filterVaccineManager,
   filterPatientManager,
 } from "@/services/VaccineManagerServices";
@@ -119,9 +165,11 @@ export default {
     return {
       loadingBtn: false,
       filterVaccineDialog: false,
+      filterOverdueDialog: false,
       filterPatientDialog: false,
       step: 0,
       patientSelect: [],
+      stateSelect: [],
       rules: [(v) => !!v || "Campo obrigatório"],
       vaccineSelect: [],
       searchVaccine: {
@@ -130,6 +178,9 @@ export default {
       },
       searchPatient: {
         id: "",
+      },
+      searchOverdue: {
+        state: "",
       },
       btnNext: "Cadastrar",
       vaccineManager: {
@@ -145,6 +196,7 @@ export default {
   },
   async created() {
     this.getPatientRequest();
+    this.stateSelect = await getStates();
     this.vaccineSelect = await getVaccine();
     this.changeVaccineManager(this.vaccineManager);
   },
@@ -170,13 +222,24 @@ export default {
       if (this.$refs.filterVaccine.validate()) {
         this.setLoading();
         let result = await filterVaccineManager(this.searchVaccine);
-        console.log(result);
         if (result.status == "error") {
           return this.setLoading();
         }
         this.setLoading();
-        this.refresh();
-        this.refreshSearchManager(result)
+        this.refreshSearchManager(result);
+        this.closeFilterVaccine();
+      }
+    },
+    async filterOverdue() {
+      if (this.$refs.filterOverdue.validate()) {
+        this.setLoading();
+        let result = await filterOverdueManager(this.searchOverdue.state);
+        if (result.status == "error") {
+          return this.setLoading();
+        }
+        this.setLoading();
+        this.refreshSearchManager(result);
+        this.closeFilterOverdue();
       }
     },
     async filterPatient() {
@@ -187,32 +250,9 @@ export default {
           return this.setLoading();
         }
         this.setLoading();
-        this.refresh();
+        this.refreshSearchManager(result);
+        this.closeFilterPatient();
       }
-    },
-    async createRequest() {
-      this.setLoading();
-      const { status } = await createVaccineManager(this.getVaccineManager);
-      if (status == "error") {
-        return this.setLoading();
-      }
-      this.setLoading();
-      this.refresh();
-    },
-    async editRequest() {
-      this.setLoading();
-      const { status } = await editVaccineManager(this.getVaccineManager);
-      if (status == "error") {
-        return this.setLoading();
-      }
-      this.setLoading();
-      this.refresh();
-    },
-    async deleteRequest() {
-      this.setLoading();
-      await deletePatient(this.getVaccineManager);
-      this.setLoading();
-      this.refresh();
     },
     async getPatientRequest() {
       let patient = [];
@@ -222,19 +262,26 @@ export default {
       });
       this.patientSelect = patient;
     },
-    filterVaccineDialog() {
-      this.filterVaccineDialog = true;
-    },
-    filterPatientDialog() {
-      this.filterPatientDialog = true;
-    },
     closeFilterVaccine() {
       this.filterVaccineDialog = false;
-      this.$refs.send.resetValidation();
+      for (let vaccine in this.searchVaccine) {
+        this.searchVaccine[vaccine] = "";
+      }
+      this.$refs.filterVaccine.resetValidation();
     },
     closeFilterPatient() {
       this.filterPatientDialog = false;
-      this.$refs.send.resetValidation();
+      for (let patient in this.searchPatient) {
+        this.searchPatient[patient] = "";
+      }
+      this.$refs.filterPatient.resetValidation();
+    },
+    closeFilterOverdue() {
+      this.filterOverdueDialog = false;
+      for (let overdue in this.searchOverdue) {
+        this.searchOverdue[overdue] = "";
+      }
+      this.$refs.filterOverdue.resetValidation();
     },
     // !SECTION
 
@@ -253,8 +300,6 @@ export default {
     },
     refreshSearchManager(value) {
       this.$eventBus.$emit("refresh-search-manager", value);
-      // clearObject(this.searchPatient);
-      // clearObject(this.searchVaccine);
     },
     // !SECTION
   },

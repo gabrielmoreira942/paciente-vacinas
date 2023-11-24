@@ -78,20 +78,6 @@
             </v-card>
           </v-form>
         </v-dialog>
-        <v-dialog v-model="getVaccineManagerDialogDelete" max-width="500px">
-          <v-card>
-            <v-card-title>Confirmação de Exclusão</v-card-title>
-            <v-card-text>
-              Tem certeza de que deseja excluir este item?
-            </v-card-text>
-            <v-card-actions class="justify-end">
-              <v-btn @click="changeVaccineManagerDialogDelete(false)"
-                >Cancelar</v-btn
-              >
-              <v-btn color="error" @click="crud()">Confirmar</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
       </v-col>
     </v-row>
   </div>
@@ -234,11 +220,6 @@ export default {
   },
   watch: {
     getVaccineManagerDialog(e) {
-      if (e == false) {
-        clearObject(this.getVaccineManager);
-      }
-    },
-    getVaccineManagerDialogDelete(e) {
       if (e == false) {
         clearObject(this.getVaccineManager);
       }

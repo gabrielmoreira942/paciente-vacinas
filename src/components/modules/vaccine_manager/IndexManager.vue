@@ -36,16 +36,6 @@
               </template>
               <span>Adicionar vacinação</span>
             </v-tooltip>
-            <!-- <v-tooltip bottom color="red">
-              <template v-slot:activator="{ on, attrs }">
-                <span v-bind="attrs" v-on="on">
-                  <v-icon color="red" @click="deleteItem(item)"
-                    >mdi-delete</v-icon
-                  >
-                </span>
-              </template>
-              <span>Excluir</span>
-            </v-tooltip> -->
           </template>
         </v-data-table>
       </v-col>
@@ -68,16 +58,15 @@ export default {
   },
   data() {
     return {
-      dialogDelete: false,
       headers: [
         {
           text: "Paciente",
           align: "start",
-          value: "patient.firstName",
+          value: "patient.name",
         },
         {
-          text: "Sobrenome",
-          value: "patient.lastName",
+          text: "Estado",
+          value: "patient.address.state",
         },
         {
           text: "Fabricante da Vacina",
@@ -105,6 +94,7 @@ export default {
   async created() {
     this.requestVaccineManager();
     this.refreshVaccineManager();
+    this.refreshSearchManager();
   },
   computed: {
     ...mapGetters(["getVaccineManager", "getVaccineManagerDialog"]),
@@ -118,6 +108,7 @@ export default {
     ]),
     async requestVaccineManager() {
       this.items = await getVaccineManager();
+      this.getPatientFormat();
     },
     async view(event) {
       this.changeVaccineManager(event);
@@ -145,12 +136,9 @@ export default {
       this.changeVaccineManagerDialog(true);
       this.changeDisabledVaccineManager(true);
     },
-    deleteItem(item) {
-      this.changeActionVaccineManager("Excluir");
-      this.changePatient(item);
-    },
     refreshVaccineManager() {
       this.$eventBus.$on("refresh-vaccine-manager", async () => {
+        console.log("object");
         this.items = [];
         this.loadingGrid = true;
         this.requestVaccineManager();
@@ -159,10 +147,19 @@ export default {
     },
     refreshSearchManager() {
       this.$eventBus.$on("refresh-search-manager", async (value) => {
+        this.items = [];
         this.items = value;
+        this.getPatientFormat()
         this.loadingGrid = true;
-        this.requestVaccineManager();
         this.loadingGrid = false;
+      });
+    },
+    async getPatientFormat() {
+      this.items.map((item, i) => {
+        this.items[i].patient.name =
+          this.items[i].patient.firstName +
+          " " +
+          this.items[i].patient.lastName;
       });
     },
   },
