@@ -2,7 +2,7 @@
   <div>
     <!-- Dados Pessoais -->
     <v-card>
-      <v-card-title>Dados Pessoais</v-card-title>
+      <v-card-title>Dados Pessoais </v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="6">
@@ -145,7 +145,12 @@
           </v-col>
         </v-row>
       </v-card-text>
-      <v-card-title>Vacinação</v-card-title>
+      <v-card-title
+        >Vacinação
+        <v-btn class="ml-5" color="error" @click="removeLastVaccine()"
+          >Remover última vacina</v-btn
+        >
+      </v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="4">
@@ -221,6 +226,10 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import { dataBr } from "@/utils/FormatDate";
+import {
+  removeLastVaccineManager,
+  getPatientById,
+} from "@/services/VaccineManagerServices";
 export default {
   name: "PacienteVacinasShowPatient",
 
@@ -241,15 +250,49 @@ export default {
     };
   },
   created() {
-    this.getVaccineManager = JSON.parse(
-      localStorage.getItem("storageVaccineManager")
-    );
-    this.getVaccineManager.vaccine.validateDate = dataBr(
-      this.getVaccineManager.vaccine.validateDate
-    );
+    this.getItems();
     this.dealings();
   },
   methods: {
+    ...mapActions(["changeVaccineManager"]),
+    async removeLastVaccine() {
+      this.$swal({
+        icon: "info",
+        title: "Deseja excluir a última vacinação?",
+        html: `<p><span>Essa ação não poderá ser revertida!</span></p>`,
+        showCancelButton: true,
+        confirmButtonColor: "#ff5252",
+        cancelButtonColor: "#1976d2",
+        cancelButtonText: "Cancelar",
+        confirmButtonText: "Excluir",
+        reverseButtons: true,
+      }).then(async (response) => {
+        if (response.isConfirmed) {
+          if (await removeLastVaccineManager(this.getVaccineManager.id)) {
+            this.changeVaccineManager(
+              await getPatientById(this.getVaccineManager.patient.id)
+            );
+            this.returnItems();
+          }
+        }
+      });
+    },
+    getItems() {
+      this.getVaccineManager = JSON.parse(
+        localStorage.getItem("storageVaccineManager")
+      );
+      this.getVaccineManager.vaccine.validateDate = dataBr(
+        this.getVaccineManager.vaccine.validateDate
+      );
+    },
+    returnItems() {
+      this.items = []
+      this.getVaccineManager = this.getVManager[0];
+      this.getVaccineManager.vaccine.validateDate = dataBr(
+        this.getVaccineManager.vaccine.validateDate
+      );
+      this.dealings();
+    },
     dealings() {
       this.getVaccineManager.listOfDoses.map((item, i) => {
         this.items.push({
@@ -257,12 +300,14 @@ export default {
         });
       });
       this.getVaccineManager.nurseProfessionals.map((item, i) => {
-        this.items[i].name = item.name 
-        this.items[i].cpf = item.cpf 
+        this.items[i].name = item.name;
+        this.items[i].cpf = item.cpf;
       });
     },
   },
-  computed: {},
+  computed: {
+    ...mapGetters({ getVManager: "getVaccineManager" }),
+  },
 };
 </script>
 

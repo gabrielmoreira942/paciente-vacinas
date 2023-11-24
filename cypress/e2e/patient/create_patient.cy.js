@@ -24,7 +24,7 @@ describe('Teste do campo de formulário de paciente', () => {
         const obj = {
             firstName: 'Gabriel',
             lastName: 'Moreira',
-            gender: 'Masculino',
+            gender: 'M',
             cpf: '07913738510',
             birthDate: '1990-01-01',
             contact: {
@@ -45,7 +45,7 @@ describe('Teste do campo de formulário de paciente', () => {
         cy.get('#nome').type(obj.firstName);
         cy.get('#sobrenome').type(obj.lastName);
         cy.get('#cpf').type(obj.cpf);
-        cy.get('#genero').type(obj.gender);
+        cy.get('#genero').click().type(obj.gender, { force: true });
         cy.get('#data_nascimento').type(obj.birthDate);
         cy.get('#proximo').click();
 

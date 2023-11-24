@@ -138,7 +138,6 @@ export default {
     },
     refreshVaccineManager() {
       this.$eventBus.$on("refresh-vaccine-manager", async () => {
-        console.log("object");
         this.items = [];
         this.loadingGrid = true;
         this.requestVaccineManager();

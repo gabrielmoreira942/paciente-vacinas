@@ -39,6 +39,7 @@
                   v-model="getPatient.gender"
                   label="Gênero"
                   id="genero"
+                  data-cy="generoSelected"
                   outlined
                 ></v-select>
                 <v-text-field
@@ -217,12 +218,12 @@ export default {
     ]),
   },
   methods: {
-    viacep(e) {
-      axios.get(`https://viacep.com.br/ws/${e}/json`).then((response) => {
-        console.log(response);
-      });
-      //
-    },
+    // viacep(e) {
+    //   axios.get(`https://viacep.com.br/ws/${e}/json`).then((response) => {
+    //     console.log(response);
+    //   });
+    //   //
+    // },
     ...mapActions([
       "changePatient",
       "changeDialogPatient",
@@ -337,9 +338,10 @@ export default {
   watch: {
     "getPatient.address.zipCode": {
       handler(e) {
-        if (e.length == 8) {
-          this.viacep(e);
-        }
+        // if (e.length == 8) {
+        //   this.viacep(e);
+        // }
+        console.log(e);
       },
     },
     getDialogPatient(e) {
