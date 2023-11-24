@@ -92,13 +92,17 @@
                   outlined
                   v-model="getPatient.address.number"
                 ></v-text-field>
+                <span v-if="invalidCep" style="color: red"
+                  ><h5>CEP inválido.</h5></span
+                >
                 <v-text-field
                   v-model="getPatient.address.zipCode"
                   v-mask="'#####-###'"
                   label="CEP"
                   id="cep"
                   outlined
-                ></v-text-field>
+                >
+                </v-text-field>
                 <v-text-field
                   v-model="getPatient.address.neighborhood"
                   label="Bairro"
@@ -192,8 +196,10 @@ export default {
     return {
       loadingBtn: false,
       disabledBtn: true,
+      invalidCep: false,
       step: 0,
       patient: {
+        id: "",
         firstName: "",
         lastName: "",
         gender: "",
@@ -232,7 +238,6 @@ export default {
     viacep(e) {
       axios.get(`https://viacep.com.br/ws/${e}/json`).then(({ data }) => {
         if (data.erro) {
-          console.log("object");
           return this.getCep(false);
         }
         this.getCep(data);
@@ -259,7 +264,7 @@ export default {
       }
     },
     async createRequest() {
-      console.log(this.getPatient);
+      delete this.getPatient.id;
       this.setLoading();
       const { status } = await createPatient(this.getPatient);
       if (status == "error") {
@@ -356,7 +361,13 @@ export default {
         this.getPatient.address.county = data.localidade;
         this.getPatient.address.state = data.uf;
         this.disabledBtn = false;
+        this.invalidCep = false;
       } else if (data == false) {
+        if (this.getPatient.address.zipCode.length == 9) {
+          this.invalidCep = true;
+        } else {
+          this.invalidCep = false;
+        }
         this.getPatient.address.street = "";
         this.getPatient.address.neighborhood = "";
         this.getPatient.address.county = "";
